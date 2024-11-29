@@ -8,7 +8,7 @@ const Header = () => {
             className="flex justify-between items-center p-4 relative"
             style={{
                 borderBottom: '1px solid gray',
-                background: 'linear-gradient(to right, #161b22, #361b42)'
+                background: 'linear-gradient(to right, #261b32, #461b52)'
             }}
         >
             <div className="flex items-center">
