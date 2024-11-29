@@ -9,7 +9,7 @@ interface PageButtonProps {
 export const PageButton = ({content, href}: PageButtonProps): JSX.Element => {
     return (
         /* From Uiverse.io by ParasSalunke */ 
-        <div className="flex items-center justify-center h-screen" style={{height: '100px'}}>
+        <div className="flex items-center justify-center h-screen" style={{height: '100px', marginLeft: '20px', marginRight: '20px'}}>
         <div className="relative group">
             <button
                 className="relative inline-block p-px font-semibold leading-6 text-white bg-gray-800 shadow-2xl cursor-pointer rounded-xl shadow-zinc-900 transition-transform duration-300 ease-in-out hover:scale-105 active:scale-95"
