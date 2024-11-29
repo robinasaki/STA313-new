@@ -13,59 +13,81 @@ const Header = () => {
         >
             <div className="flex items-center">
                 <button onClick={() => setHamburgerMenuOpened(!hamburgerMenuOpened)}>
-                    <span style={{
-                        color: 'gray',
-                        fontSize: '30px',
-                        border: '1px solid lightgray',
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        width: '40px',
-                        height: '40px',
-                        borderRadius: '5px',
-                        fontFamily: 'Arial',
-                        transition: 'transform 0.3s ease',
-                    }}
-                    className="hover:transform hover:scale-110"
-                    >≡
+                    <span
+                        style={{
+                            color: 'gray',
+                            fontSize: '30px',
+                            border: '1px solid lightgray',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            width: '40px',
+                            height: '40px',
+                            borderRadius: '5px',
+                            fontFamily: 'Arial',
+                            transition: 'transform 0.3s ease',
+                        }}
+                        className="transform hover:scale-110" // Updated classes
+                    >
+                        ≡
                     </span>
                 </button>
 
-                <div style={{
-                    fontSize: '25px',
-                    marginLeft: '30px',
-                    marginTop: '5px',
-                }}>Sleep Analysis for a Healthier Lifestyle for Labour-Intense Jobs
-                    
+                <div
+                    style={{
+                        fontSize: '25px',
+                        marginLeft: '30px',
+                        marginTop: '5px',
+                    }}
+                >
+                    Sleep Analysis for a Healthier Lifestyle for Labour-Intense Jobs
                 </div>
             </div>
 
-            {hamburgerMenuOpened && (
-                <div
-                    className="absolute top-full left-0 w-full bg-white shadow-md"
-                    style={{
-                        borderTop: '1px solid gray',
-                        background: 'linear-gradient(to right, #161b22, #261b32)',
-                        zIndex: 10
-                    }}
-                >
-                    <ul className="flex flex-col p-4">
-                        <li className="py-2 border-b border-gray-200">
-                            <a href="#home" className="text-gray-300 hover:text-white">Home</a>
-                        </li>
-                        <li className="py-2 border-b border-gray-200">
-                            <a href="#about" className="text-gray-300 hover:text-white">About</a>
-                        </li>
-                        <li className="py-2 border-b border-gray-200">
-                            <a href="#services" className="text-gray-300 hover:text-white">Services</a>
-                        </li>
-                        <li className="py-2">
-                            <a href="#contact" className="text-gray-300 hover:text-white">Contact</a>
-                        </li>
-                    </ul>
-                </div>
-            )}
+            {/* Always render the menu and control its visibility and transformation */}
+            <div
+                style={{
+                    zIndex: 10,
+                    fontSize: '15px',
+                    color: 'white',
+                    position: 'absolute',
+                    top: '100%',
+                    left: '10px',
+                    width: '15%',
+                    background: 'linear-gradient(to bottom, #1f2937, #1f2947)',
+                    padding: '1rem',
+                    display: 'flex',
+                    flexDirection: 'column', // Changed to 'column' for vertical layout
+                    alignItems: 'flex-start',
+                    borderTop: '1px solid gray',
+                    borderBottomRightRadius: '10px',
+                    borderBottomLeftRadius: '10px',
+                    borderRight: '1px solid gray',
+                    borderBottom: '1px solid gray',
+                    borderLeft: '1px solid gray',
+                    transition: 'transform 0.3s ease, opacity 0.3s ease',
+                    transform: hamburgerMenuOpened ? 'translateY(0)' : 'translateY(-20px)',
+                    opacity: hamburgerMenuOpened ? 1 : 0,
+                    pointerEvents: hamburgerMenuOpened ? 'auto' : 'none', // Prevent interaction when closed
+                }}
+            >
+                <ul className="flex flex-col p-4">
+                    <li className="py-2 border-b border-gray-200">
+                        <a href="#home" className="text-gray-300 hover:text-white">Home</a>
+                    </li>
+                    <li className="py-2 border-b border-gray-200">
+                        <a href="#about" className="text-gray-300 hover:text-white">About</a>
+                    </li>
+                    <li className="py-2 border-b border-gray-200">
+                        <a href="#services" className="text-gray-300 hover:text-white">Services</a>
+                    </li>
+                    <li className="py-2">
+                        <a href="#contact" className="text-gray-300 hover:text-white">Contact</a>
+                    </li>
+                </ul>
+            </div>
         </div>
     );
 }
+
 export default Header;
