@@ -3,8 +3,8 @@ import * as d3 from "d3";
 
 export function GraphOne() {
   const [chartData, setChartData] = useState<any[]>([]);
-  const [showRed, toggleRed] = useState(true); // Filter for Diagnosed with Sleep Disorder
-  const [showBlue, toggleBlue] = useState(true); // Filter for Not Diagnosed with Sleep Disorder
+  const [showPink, togglePink] = useState(true); // Filter for Diagnosed with Sleep Disorder
+  const [showCyan, toggleCyan] = useState(true); // Filter for Not Diagnosed with Sleep Disorder
   const svgRef = useRef<SVGSVGElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -47,7 +47,7 @@ export function GraphOne() {
 
     // Filter data based on checkboxes
     const filteredData = parsedData.filter(
-      d => (showRed && d.sleepDisorder === 1) || (showBlue && d.sleepDisorder === 2)
+      d => (showPink && d.sleepDisorder === 1) || (showCyan && d.sleepDisorder === 2)
     );
 
     const x = d3
@@ -105,10 +105,10 @@ export function GraphOne() {
       .attr("cx", d => x(d.x))
       .attr("cy", d => y(d.y))
       .attr("r", d => sizeScale(d.sleepLoss)) // Set radius based on Sleep_loss
-      .attr("fill", d => (d.sleepDisorder === 1 ? "red" : "blue")) // Change colour based on sleep disorder
+      .attr("fill", d => (d.sleepDisorder === 1 ? "#FF6EC7" : "cyan")) // Change colour based on sleep disorder
       .attr("opacity", 0.7);
 
-  }, [chartData, showRed, showBlue]);
+  }, [chartData, showPink, showCyan]);
 
   return (
     <div
@@ -142,17 +142,31 @@ export function GraphOne() {
             Legend:
           </h3>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <input type="checkbox" checked={showRed} onChange={e => toggleRed(e.target.checked)}/>
-            <div style={{width: "15px", height: "15px", borderRadius: "50%", backgroundColor: "red"}} />
-            <label style={{ color: "red" }}>Diagnosed With Sleep Disorder</label>
-          </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <input 
+              type="checkbox" 
+              checked={showPink} 
+              onChange={e => togglePink(e.target.checked)}
+              style={{ cursor: "pointer", transition: "transform 0.2s" }}
+              onMouseEnter={e => e.currentTarget.style.transform = "scale(1.2)"}
+              onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
+            />
+            <div style={{width: "15px", height: "15px", borderRadius: "50%", backgroundColor: "#FF6EC7"}} />
+            <label style={{ color: "#FF6EC7" }}>Diagnosed With Sleep Disorder</label>
+            </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <input type="checkbox" checked={showBlue} onChange={e => toggleBlue(e.target.checked)} />
-            <div style={{width: "15px", height: "15px", borderRadius: "50%", backgroundColor: "blue"}} />
-            <label style={{ color: "blue" }}>Not Diagnosed With Sleep Disorder</label>
-          </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+            <input 
+              type="checkbox" 
+              checked={showCyan} 
+              onChange={e => toggleCyan(e.target.checked)}
+              style={{ cursor: "pointer", transition: "transform 0.2s" }}
+              onMouseEnter={e => e.currentTarget.style.transform = "scale(1.2)"}
+              onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
+            />
+            <div style={{width: "15px", height: "15px", borderRadius: "50%", backgroundColor: "cyan"}} />
+            <label style={{ color: "cyan" }}>Not Diagnosed With Sleep Disorder</label>
+            </div>
 
           <div style={{ marginTop: "10px", textAlign: "center" }}>
             <p style={{ fontSize: "14px", color: "white", marginBottom: "5px" }}>
