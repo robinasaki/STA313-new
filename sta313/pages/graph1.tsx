@@ -541,7 +541,7 @@ export function GraphOne() {
       </div>
 
       <h2 style={{ marginBottom: "20px", fontSize: "24px" }}>
-        Daily Caffeine Intake vs. Total Years as Dispatcher
+        Daily Caffeine Intake, Total Years as Dispatcher and the Resulting Sleep Loss
       </h2>
 
       <svg ref={svgRef}></svg>
