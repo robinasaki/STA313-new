@@ -12,6 +12,7 @@ export function Footer() {
             background: 'linear-gradient(to right, #261b32, #461b52)',
             borderTop: '1px solid gray'
         }}>
+            <PageButton content={"Main Page"} href={"/"} /> 
             <PageButton content={"Graph 1"} href={"/graph1"} />
             <PageButton content={"Graph 2"} href={"/graph2"} />
             <PageButton content={"Graph 3"} href={"/graph3"} />
