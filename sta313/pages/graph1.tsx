@@ -44,6 +44,7 @@ export function GraphOne() {
         y: +d["If_yes_how_many_daily"] || 0,
         sleepDisorder: +d["Diagnosed_Sleep_disorder"],
         sleepLoss: +d["Sleep_loss"] || 1,
+        stress: d["Sleep_loss"] || "Unknown", // Include stress attribute
       }))
       .filter((d) => d.x > 0 && d.y > 0); // Filter out invalid entries
 
@@ -174,6 +175,19 @@ export function GraphOne() {
       .attr("transform", "rotate(-90)")
       .text("Daily Caffeine Intake (cups)");
 
+    // Tooltip element
+    const tooltip = d3
+      .select(containerRef.current)
+      .append("div")
+      .attr("class", "tooltip")
+      .style("position", "absolute")
+      .style("background-color", "rgba(0, 0, 0, 0.7)")
+      .style("color", "white")
+      .style("padding", "8px")
+      .style("border-radius", "4px")
+      .style("pointer-events", "none")
+      .style("opacity", 0);
+
     // Circles Group with clip path
     const circlesGroup = svg_graph
       .append("g")
@@ -212,6 +226,23 @@ export function GraphOne() {
       .attr("r", 0) // Start with radius 0 for animation
       .attr("fill", (d) => (d.sleepDisorder === 1 ? "#FF6EC7" : "cyan")) // Change colour based on sleep disorder
       .attr("opacity", 0)
+      .on("mouseover", function (event, d) {
+        d3.select(this).attr("stroke", "white").attr("stroke-width", 2);
+        tooltip
+          .style("opacity", 1)
+          .html(`<strong>Stress:</strong> ${d.stress}`)
+          .style("left", event.pageX + 10 + "px")
+          .style("top", event.pageY - 28 + "px");
+      })
+      .on("mousemove", function (event) {
+        tooltip
+          .style("left", event.pageX + 10 + "px")
+          .style("top", event.pageY - 28 + "px");
+      })
+      .on("mouseout", function () {
+        d3.select(this).attr("stroke", null);
+        tooltip.style("opacity", 0);
+      })
       .transition()
       .duration(500)
       .attr("r", (d) => sizeScale(d.sleepLoss))
