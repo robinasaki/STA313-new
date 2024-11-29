@@ -77,6 +77,28 @@ export function GraphOne() {
     // Store svg_graph in ref for access outside useEffect
     svgGraphRef.current = svg_graph;
 
+    // Define clip path
+    svg_graph
+      .append("defs")
+      .append("clipPath")
+      .attr("id", "clip")
+      .append("rect")
+      .attr("x", margin.left)
+      .attr("y", margin.top)
+      .attr("width", width - margin.left - margin.right)
+      .attr("height", height - margin.top - margin.bottom);
+
+    // Add grid lines
+    const xAxisGrid = d3.axisBottom(x)
+      .ticks(10)
+      .tickSize(-height + margin.top + margin.bottom)
+      .tickFormat("");
+
+    const yAxisGrid = d3.axisLeft(y)
+      .ticks(10)
+      .tickSize(-width + margin.left + margin.right)
+      .tickFormat("");
+
     // X Axis
     const xAxisGroup = svg_graph
       .append("g")
@@ -89,6 +111,19 @@ export function GraphOne() {
       .selectAll("text")
       .style("font-size", "18px")
       .style("fill", "white");
+
+    // X Axis Grid
+    const xGridGroup = svg_graph
+      .append("g")
+      .attr("class", "x-grid")
+      .attr("transform", `translate(0,${height - margin.bottom})`);
+
+    xGridGroup.call(xAxisGrid)
+      .selectAll("line")
+      .style("stroke", "gray")
+      .style("stroke-opacity", 0.2);
+
+    xGridGroup.selectAll("path").remove();
 
     // X Axis Label
     svg_graph
@@ -114,6 +149,19 @@ export function GraphOne() {
       .style("font-size", "18px")
       .style("fill", "white");
 
+    // Y Axis Grid
+    const yGridGroup = svg_graph
+      .append("g")
+      .attr("class", "y-grid")
+      .attr("transform", `translate(${margin.left},0)`);
+
+    yGridGroup.call(yAxisGrid)
+      .selectAll("line")
+      .style("stroke", "gray")
+      .style("stroke-opacity", 0.2);
+
+    yGridGroup.selectAll("path").remove();
+
     // Y Axis Label
     svg_graph
       .append("text")
@@ -126,8 +174,11 @@ export function GraphOne() {
       .attr("transform", "rotate(-90)")
       .text("Daily Caffeine Intake (cups)");
 
-    // Circles Group
-    const circlesGroup = svg_graph.append("g").attr("class", "circles");
+    // Circles Group with clip path
+    const circlesGroup = svg_graph
+      .append("g")
+      .attr("class", "circles")
+      .attr("clip-path", "url(#clip)");
 
     // Bind data to circles and handle enter, update, and exit selections
     const circles = circlesGroup
@@ -205,6 +256,33 @@ export function GraphOne() {
         .selectAll("text")
         .style("font-size", "18px")
         .style("fill", "white");
+
+      // Update grid lines
+      xGridGroup
+        .call(
+          d3.axisBottom(new_x)
+            .ticks(10)
+            .tickSize(-height + margin.top + margin.bottom)
+            .tickFormat("")
+        )
+        .selectAll("line")
+        .style("stroke", "gray")
+        .style("stroke-opacity", 0.2);
+
+      xGridGroup.selectAll("path").remove();
+
+      yGridGroup
+        .call(
+          d3.axisLeft(new_y)
+            .ticks(10)
+            .tickSize(-width + margin.left + margin.right)
+            .tickFormat("")
+        )
+        .selectAll("line")
+        .style("stroke", "gray")
+        .style("stroke-opacity", 0.2);
+
+      yGridGroup.selectAll("path").remove();
 
       // Update circle positions with new scales
       circlesGroup
