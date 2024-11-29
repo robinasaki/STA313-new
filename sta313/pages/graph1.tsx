@@ -230,7 +230,13 @@ export function GraphOne() {
         d3.select(this).attr("stroke", "white").attr("stroke-width", 2);
         tooltip
           .style("opacity", 1)
-          .html(`<strong>Stress:</strong> ${d.stress}`)
+          .html(
+            `<strong>Total Years as Dispatcher:</strong> ${d.x}<br/>
+             <strong>Daily Caffeine Intake (cups):</strong> ${d.y}<br/>
+             <strong>Stress:</strong> ${d.stress}<br/>
+             <strong>Sleep Disorder:</strong> ${d.sleepDisorder === 1 ? "Diagnosed" : "Not Diagnosed"}<br/>
+             <strong>Sleep Loss:</strong> ${d.sleepLoss}`
+          )
           .style("left", event.pageX + 10 + "px")
           .style("top", event.pageY - 28 + "px");
       })
