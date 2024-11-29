@@ -365,8 +365,10 @@ export function GraphOne() {
             textAlign: "center",
           }}
         >
-          Legend:
+          Interactive Legend:
         </h3>
+
+        <span>Click here to filter data</span>
 
         <div
           style={{
@@ -500,7 +502,7 @@ export function GraphOne() {
               marginBottom: "5px",
             }}
           >
-            Zoom Controls:
+            Click Here for Zoom Controls:
           </p>
           <div
             style={{
