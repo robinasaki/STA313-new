@@ -234,7 +234,15 @@ export function GraphOne() {
             `<strong>Total Years as Dispatcher:</strong> ${d.x}<br/>
              <strong>Daily Caffeine Intake (cups):</strong> ${d.y}<br/>
              <strong>Sleep Disorder:</strong> ${d.sleepDisorder === 1 ? "Diagnosed" : "Not Diagnosed"}<br/>
-             <strong>Stress Level:</strong> ${d.sleepLoss}`
+             <strong>Stress Level:</strong> ${
+               d.sleepLoss === 1
+           ? "No Stress"
+           : d.sleepLoss === 2
+           ? "A Little Stress"
+           : d.sleepLoss === 3
+           ? "Stressful"
+           : "Very Stressful"
+             }`
           )
           .style("left", event.pageX + 10 + "px")
           .style("top", event.pageY - 28 + "px");
