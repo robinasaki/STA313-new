@@ -233,7 +233,6 @@ export function GraphOne() {
           .html(
             `<strong>Total Years as Dispatcher:</strong> ${d.x}<br/>
              <strong>Daily Caffeine Intake (cups):</strong> ${d.y}<br/>
-             <strong>Stress:</strong> ${d.stress}<br/>
              <strong>Sleep Disorder:</strong> ${d.sleepDisorder === 1 ? "Diagnosed" : "Not Diagnosed"}<br/>
              <strong>Sleep Loss:</strong> ${d.sleepLoss}`
           )

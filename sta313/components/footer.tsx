@@ -13,7 +13,6 @@ export function Footer() {
             background: 'linear-gradient(to right, #261b32, #461b52)',
             borderTop: '1px solid gray'
         }}>
-            <p style={{ fontSize: '20px', fontFamily: 'monospace', marginTop: '20px' }}>Click here to nevigate   to:</p>
             <div style={{
                 display: 'flex',
                 justifyContent: 'center',
