@@ -20,7 +20,7 @@ export function Footer() {
                 flexWrap: 'wrap'
             }}>
                 <PageButton content={"Main Page"} href={"/"} />
-                <PageButton content={"Graph 1: Daily Caffeine Intake, Total Years as Dispatcher and the Resulting Sleep Loss"} href={"/graph1"} />
+                <PageButton content={"Graph 1"} href={"/graph1"} />
                 <PageButton content={"Graph 2"} href={"/graph2"} />
                 <PageButton content={"Graph 3"} href={"/graph3"} />
                 <PageButton content={"Graph 4"} href={"/graph4"} />
