@@ -125,7 +125,7 @@ export function YearsVsSleepDisorderBarChart() {
       .style("text-anchor", "middle")
       .style("font-size", "18px")
       .style("fill", "white")
-      .text("Years as Dispatcher (Range)");
+      .text("Years as Dispatcher");
 
     // Y-axis
     svg
