@@ -37,7 +37,7 @@ export function YearsVsSleepDisorderBarChart() {
     }));
 
     // Group data by year ranges (bins)
-    const binStep = 5; // Years per bin
+    const binStep = 7; // Years per bin
     const maxYears = 40; // Limit bins to 35-39
     const bins = d3
       .bin()
@@ -92,13 +92,13 @@ export function YearsVsSleepDisorderBarChart() {
       .style("font-size", "20px") // Title font size
       .style("font-weight", "bold")
       .style("fill", "white")
-      .text("Proportion of Dispatchers with Sleep Disorders by Years");
+      .text("Proportion of Dispatchers with Sleep Disorders by Years Of Experience");
 
     // Underline for the title
     svg
       .append("line")
-      .attr("x1", titleX - 275) // Adjust length of the underline
-      .attr("x2", titleX + 275)
+      .attr("x1", titleX - 350) // Adjust length of the underline
+      .attr("x2", titleX + 350)
       .attr("y1", titleY + 5) // Position slightly below the title
       .attr("y2", titleY + 5)
       .style("stroke", "white")
