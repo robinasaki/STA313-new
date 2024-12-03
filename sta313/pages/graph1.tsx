@@ -72,26 +72,10 @@ export function YearsVsSleepDisorderBarChart() {
       .attr("width", containerWidth)
       .attr("height", containerHeight);
 
-    // Tooltip
-    const tooltip = d3
-      .select(containerRef.current)
-      .append("div")
-      .style("position", "absolute")
-      .style("background-color", "rgba(0, 0, 0, 0.8)")
-      .style("color", "white")
-      .style("padding", "8px")
-      .style("border-radius", "4px")
-      .style("pointer-events", "none")
-      .style("opacity", 0);
-
-    // Chart Title
-    const titleX = width / 2 + margin.left;
-    const titleY = margin.top / 2;
-
     svg
       .append("text")
-      .attr("x", titleX)
-      .attr("y", titleY)
+      .attr("x", width / 2 + margin.left)
+      .attr("y", margin.top / 2)
       .style("text-anchor", "middle")
       .style("font-size", "20px")
       .style("font-weight", "bold")
@@ -100,14 +84,13 @@ export function YearsVsSleepDisorderBarChart() {
 
     svg
       .append("line")
-      .attr("x1", titleX - 350)
-      .attr("x2", titleX + 350)
-      .attr("y1", titleY + 5)
-      .attr("y2", titleY + 5)
+      .attr("x1", width / 2 + margin.left - 350)
+      .attr("x2", width / 2 + margin.left + 350)
+      .attr("y1", margin.top / 2 + 5)
+      .attr("y2", margin.top / 2 + 5)
       .style("stroke", "white")
       .style("stroke-width", 2);
 
-    // X-axis
     svg
       .append("g")
       .attr("transform", `translate(0,${height + margin.top})`)
@@ -127,7 +110,6 @@ export function YearsVsSleepDisorderBarChart() {
       .style("fill", "white")
       .text("Years as Dispatcher");
 
-    // Y-axis
     svg
       .append("g")
       .attr("transform", `translate(${margin.left},0)`)
@@ -146,7 +128,6 @@ export function YearsVsSleepDisorderBarChart() {
       .style("fill", "white")
       .text("Proportion Diagnosed with Sleep Disorder");
 
-    // Bars
     svg
       .append("g")
       .selectAll("rect")
@@ -157,108 +138,51 @@ export function YearsVsSleepDisorderBarChart() {
       .attr("width", xScale.bandwidth())
       .attr("height", (d) => height + margin.top - yScale(d.proportion))
       .attr("fill", (d) => colorScale(d.proportion))
-      .attr("opacity", 0.8)
-      .on("mouseover", function (event, d) {
-        d3.select(this).attr("opacity", 1);
-        tooltip
-          .style("opacity", 1)
-          .html(
-            `<strong>Years Range:</strong> ${d.binRange}<br/>
-             <strong>Proportion Diagnosed:</strong> ${(d.proportion * 100).toFixed(2)}%<br/>
-             <strong>Total Individuals:</strong> ${d.total}`
-          )
-          .style("left", `${event.pageX + 10}px`)
-          .style("top", `${event.pageY - 40}px`);
-      })
-      .on("mousemove", function (event) {
-        tooltip
-          .style("left", `${event.pageX + 20}px`)
-          .style("top", `${event.pageY - 60}px`);
-      })
-      .on("mouseout", function () {
-        d3.select(this).attr("opacity", 0.8);
-        tooltip.style("opacity", 0);
-      });
+      .attr("opacity", 0.8);
 
-    // Legend
-    const legendWidth = 250;
-    const legendHeight = 20;
-
-    const legendGroup = svg
-      .append("g")
-      .attr("transform", `translate(${containerWidth - legendWidth - 120},${margin.top})`);
-
-    legendGroup
-      .append("rect")
-      .attr("width", legendWidth + 40)
-      .attr("height", legendHeight + 80)
-      .attr("x", -20)
-      .attr("y", -30)
-      .style("fill", "transparent")
-      .style("stroke", "white")
-      .style("stroke-width", 2);
-
-    legendGroup
-      .append("text")
-      .attr("x", legendWidth / 2)
-      .attr("y", -10)
-      .style("text-anchor", "middle")
-      .style("font-size", "14px")
-      .style("fill", "white")
-      .text("Legend:");
-
-    legendGroup
-      .append("text")
-      .attr("x", legendWidth / 2)
-      .attr("y", 5)
-      .style("text-anchor", "middle")
-      .style("font-size", "14px")
-      .style("fill", "white")
-      .text("Proportion Diagnosed with Sleep Disorder");
-
-    const gradient = svg
-      .append("defs")
-      .append("linearGradient")
-      .attr("id", "legend-gradient")
-      .attr("x1", "0%")
-      .attr("y1", "0%")
-      .attr("x2", "100%")
-      .attr("y2", "0%");
-
-    gradient
-      .append("stop")
-      .attr("offset", "0%")
-      .attr("stop-color", "lightblue");
-
-    gradient
-      .append("stop")
-      .attr("offset", "100%")
-      .attr("stop-color", "darkred");
-
-    legendGroup
-      .append("rect")
-      .attr("width", legendWidth)
-      .attr("height", legendHeight)
-      .attr("y", 15)
-      .style("fill", "url(#legend-gradient)");
-
-    const legendScale = d3.scaleLinear().domain([0, 0.5]).range([0, legendWidth]);
-    const legendAxis = d3.axisBottom(legendScale).ticks(5).tickFormat(d3.format(".0%"));
-
-    legendGroup
-      .append("g")
-      .attr("transform", `translate(0,${legendHeight + 15})`)
-      .call(legendAxis)
-      .selectAll("text")
-      .style("fill", "white")
-      .style("font-size", "12px");
   }, [chartData]);
 
   return (
-    <div ref={containerRef} style={{ position: "relative", height: "100%" }}>
-      <svg ref={svgRef}></svg>
+    <div
+      style={{
+
+        overflowY: "auto", // Enable vertical scrolling if content overflows
+        backgroundColor: "#1a1a1a", // Optional: Set a background color for the entire page
+        color: "white", // Set text color for the paragraph
+      }}
+    >
+      <div ref={containerRef} style={{ position: "relative" }}>
+        <svg ref={svgRef}></svg>
+      </div>
+      <div style={{ marginTop: "20px", padding: "10px" }}>
+        <p>
+          We aim to answer the research question: Does an increase in years as a
+          dispatcher elevate the likelihood of sleep disorders? By examining the
+          relationship between the proportion of dispatchers diagnosed with sleep
+          disorders across years of experience from this visualization, we may
+          answer this question. It is easy to see that the proportion of
+          dispatchers diagnosed with a sleep disorder increases significantly as
+          the number of years of experience grows.
+        </p>
+        <p>
+          The prolonged exposure to factors such as irregular schedules, high
+          pressure, and lack of sleep is inherently part of the job as a
+          dispatcher. The cumulative stress from the role reveals its
+          consequences from longer years of experience in the role. The trend
+          begins to show after 14 years of experience where the proportion jumps
+          twice as much as the previous bin and from there grows each bin up to
+          the range of 35+ years of experience as a dispatcher, which shows 25%
+          of individuals with a sleep disorder.
+        </p>
+        <p>
+          Thus, this visualization highlights the urgent need to provide
+          dispatchers with better work conditions and promote safer sleep hygiene
+          among long-term employees. By addressing this, we can improve the
+          health and safety of dispatchers.
+        </p>
+      </div>
     </div>
-  );
+  );   
 }
 
 export default function Page() {
