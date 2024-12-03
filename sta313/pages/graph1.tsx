@@ -7,7 +7,6 @@ export function YearsVsSleepDisorderBarChart() {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    // Fetch and parse CSV data
     fetch("/data/data.csv")
       .then((response) => response.text())
       .then((text) => {
@@ -20,45 +19,41 @@ export function YearsVsSleepDisorderBarChart() {
   useEffect(() => {
     if (chartData.length === 0 || !svgRef.current || !containerRef.current) return;
 
-    // Clear previous content
     d3.select(svgRef.current).selectAll("*").remove();
 
     const containerWidth = containerRef.current.clientWidth;
     const containerHeight = window.innerHeight * 0.8;
 
-    const margin = { top: 90, right: 40, bottom: 90, left: 100 }; // Increased top margin for title
+    const margin = { top: 90, right: 40, bottom: 90, left: 100 };
     const width = containerWidth - margin.left - margin.right;
     const height = containerHeight - margin.top - margin.bottom;
 
-    // Prepare data
     const parsedData = chartData.map((d: any) => ({
       years: +d["Total_years_dispatcher"] || 0,
-      sleepDisorder: +d["Diagnosed_Sleep_disorder"], // 1 = Diagnosed, 2 = Not Diagnosed
+      sleepDisorder: +d["Diagnosed_Sleep_disorder"],
     }));
 
-    // Group data by year ranges (bins)
-    const binStep = 7; // Years per bin
-    const maxYears = 40; // Limit bins to 35-39
+    const binStep = 7;
+    const maxYears = 42;
     const bins = d3
       .bin()
       .value((d) => d.years)
       .thresholds(d3.range(0, maxYears, binStep))(parsedData);
 
     const groupedData = bins.map((bin, index, array) => {
-      const isLastBin = index === array.length - 1; // Check if it's the last bin
+      const isLastBin = index === array.length - 1;
       const total = bin.length;
       const diagnosed = bin.filter((d) => d.sleepDisorder === 1).length;
       const proportion = total === 0 ? 0 : diagnosed / total;
       return {
         binRange: isLastBin
-          ? `${Math.floor(bin.x0)}-${Math.floor(maxYears - 1)}` // Adjust the last bin range to end at 39
+          ? `${Math.floor(bin.x0)}-${Math.floor(maxYears - 1)}`
           : `${Math.floor(bin.x0)}-${Math.floor(bin.x1) - 1}`,
         proportion,
         total,
       };
     });
 
-    // Scales
     const xScale = d3
       .scaleBand()
       .domain(groupedData.map((d) => d.binRange))
@@ -67,18 +62,27 @@ export function YearsVsSleepDisorderBarChart() {
 
     const yScale = d3
       .scaleLinear()
-      .domain([0, 0.5]) // Maximum y-axis value set to 50%
+      .domain([0, 0.5])
       .range([height + margin.top, margin.top]);
 
-    const colorScale = d3
-      .scaleLinear()
-      .domain([0, 0.5])
-      .range(["lightblue", "darkred"]); // Color gradient
+    const colorScale = d3.scaleLinear().domain([0, 0.5]).range(["lightblue", "darkred"]);
 
     const svg = d3
       .select(svgRef.current)
       .attr("width", containerWidth)
       .attr("height", containerHeight);
+
+    // Tooltip
+    const tooltip = d3
+      .select(containerRef.current)
+      .append("div")
+      .style("position", "absolute")
+      .style("background-color", "rgba(0, 0, 0, 0.8)")
+      .style("color", "white")
+      .style("padding", "8px")
+      .style("border-radius", "4px")
+      .style("pointer-events", "none")
+      .style("opacity", 0);
 
     // Chart Title
     const titleX = width / 2 + margin.left;
@@ -87,19 +91,18 @@ export function YearsVsSleepDisorderBarChart() {
     svg
       .append("text")
       .attr("x", titleX)
-      .attr("y", titleY) // Position at the top
+      .attr("y", titleY)
       .style("text-anchor", "middle")
-      .style("font-size", "20px") // Title font size
+      .style("font-size", "20px")
       .style("font-weight", "bold")
       .style("fill", "white")
       .text("Proportion of Dispatchers with Sleep Disorders by Years Of Experience");
 
-    // Underline for the title
     svg
       .append("line")
-      .attr("x1", titleX - 350) // Adjust length of the underline
+      .attr("x1", titleX - 350)
       .attr("x2", titleX + 350)
-      .attr("y1", titleY + 5) // Position slightly below the title
+      .attr("y1", titleY + 5)
       .attr("y2", titleY + 5)
       .style("stroke", "white")
       .style("stroke-width", 2);
@@ -154,7 +157,28 @@ export function YearsVsSleepDisorderBarChart() {
       .attr("width", xScale.bandwidth())
       .attr("height", (d) => height + margin.top - yScale(d.proportion))
       .attr("fill", (d) => colorScale(d.proportion))
-      .attr("opacity", 0.8);
+      .attr("opacity", 0.8)
+      .on("mouseover", function (event, d) {
+        d3.select(this).attr("opacity", 1);
+        tooltip
+          .style("opacity", 1)
+          .html(
+            `<strong>Years Range:</strong> ${d.binRange}<br/>
+             <strong>Proportion Diagnosed:</strong> ${(d.proportion * 100).toFixed(2)}%<br/>
+             <strong>Total Individuals:</strong> ${d.total}`
+          )
+          .style("left", `${event.pageX + 10}px`)
+          .style("top", `${event.pageY - 40}px`);
+      })
+      .on("mousemove", function (event) {
+        tooltip
+          .style("left", `${event.pageX + 10}px`)
+          .style("top", `${event.pageY - 40}px`);
+      })
+      .on("mouseout", function () {
+        d3.select(this).attr("opacity", 0.8);
+        tooltip.style("opacity", 0);
+      });
 
     // Legend
     const legendWidth = 250;
