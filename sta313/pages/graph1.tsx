@@ -172,8 +172,8 @@ export function YearsVsSleepDisorderBarChart() {
       })
       .on("mousemove", function (event) {
         tooltip
-          .style("left", `${event.pageX + 10}px`)
-          .style("top", `${event.pageY - 40}px`);
+          .style("left", `${event.pageX + 20}px`)
+          .style("top", `${event.pageY - 60}px`);
       })
       .on("mouseout", function () {
         d3.select(this).attr("opacity", 0.8);
