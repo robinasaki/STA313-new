@@ -396,11 +396,12 @@ export default function Page() {
         flexDirection: "column", // Stack children vertically
         justifyContent: "flex-start", // Align at the top
         alignItems: "center",
-        height: "100vh", // Full height of the viewport
+        height: "100%", // Full height of the viewport
         textAlign: "center",
         paddingTop: "1px", // Add padding equal to the height of your sticky header
         boxSizing: "border-box", // Ensure padding doesn't affect width
         margin: "2%",
+        overflow: "auto",
       }}
     >
       <div style={{ width: "100%", margin: "2%" }}>
