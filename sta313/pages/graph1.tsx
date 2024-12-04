@@ -4,7 +4,7 @@ import React from "react";
 export function GraphOne() {
     return (
         <div>
-            GRAPH FOUR CONTENT
+            GRAPH ONE CONTENT
         </div>
     )
 }
