@@ -313,13 +313,13 @@ export function YearsVsSleepDisorderBarChart() {
     environments, and long works hours of a dispatcher, combine to increase the proportion over the years of experience
   </p>
   <p style={{ marginTop: "20px" }}>
-    This visualization suggests that long term dispatchers that have been exposed to factors such as
-    inconsistent work schedule, high pressure work environments, and long works hours of a dispatcher
-    have a <strong style={{fontWeight: "bold"}}>higher risk</strong> to being diagnosed with a sleep disorder.
+    This visualization demonstrates that having been exposed to factors such as
+    inconsistent work schedule, high pressure work environments as a dispatcher in the long term
+    consists to a <strong style={{fontWeight: "bold"}}>higher risk</strong> to being diagnosed with a sleep disorder.
   </p>
 
   <p style={{ marginTop: "20px" }}>
-    This highlights the need to emphasize better work conditions for dispatchers and promotes
+    This emphasizes the need for better work conditions for dispatchers and to promote
     healthier sleep habits espically for long term dispatchers.
   </p>
 </div>
