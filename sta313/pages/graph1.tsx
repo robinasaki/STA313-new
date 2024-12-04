@@ -200,6 +200,67 @@ export function SleepRiskBubbleChart() {
       style={{ position: "relative", background: "#1a1a1a", color: "white" }}
     >
       <svg ref={svgRef}></svg>
+      <div style={{ marginLeft: "20px", flex: 1, maxWidth: "500px" }}>
+        <h1 style={{ fontSize: "30px", marginBottom: "20px" }}>
+          Trends and Insights
+        </h1>
+        <p style={{ marginBottom: "10px" }}>
+          The visualization examines the research question:{" "}
+          <strong style={{ fontWeight: "bold" }}>
+            How does age influence sleep risk for individuals diagnosed with
+            sleep disorders?
+          </strong>{" "}
+          Key trends relating to this are:
+        </p>
+        <p style={{ marginBottom: "10px" }}>
+          <strong style={{ fontWeight: "bold", textDecoration: "underline" }}>
+            Higher Risk Among Older Age Groups:
+          </strong>
+          Individuals in the{" "}
+          <strong style={{ fontWeight: "bold" }}>50-59</strong> and{" "}
+          <strong style={{ fontWeight: "bold" }}>60+ years</strong> age groups
+          show a{" "}
+          <strong style={{ fontWeight: "bold" }}>
+            higher Sleep Risk Index
+          </strong>
+          , with a significant clustering of high-risk cases.
+        </p>
+        <p style={{ marginBottom: "10px" }}>
+          <strong style={{ fontWeight: "bold", textDecoration: "underline" }}>
+            Variation Across Age Groups:
+          </strong>
+          The <strong style={{ fontWeight: "bold" }}>40-49</strong> age group
+          has moderate variability, while the{" "}
+          <strong style={{ fontWeight: "bold" }}>20-29</strong>
+          and <strong style={{ fontWeight: "bold" }}>30-39</strong> groups show
+          generally lower Sleep Risk Index values, indicating younger
+          individuals are at comparatively lower risk.
+        </p>
+        <p style={{ marginBottom: "10px" }}>
+          <strong style={{ fontWeight: "bold", textDecoration: "underline" }}>
+            Underlying Factors:
+          </strong>
+          Stress-related workplace and life factors, such as{" "}
+          <strong style={{ fontWeight: "bold" }}>job pressure</strong>,{" "}
+          <strong style={{ fontWeight: "bold" }}>inadequate time off</strong>,
+          and{" "}
+          <strong style={{ fontWeight: "bold" }}>
+            responsibility for others’ safety
+          </strong>
+          , contribute significantly to the Sleep Risk Index across all age
+          groups.
+        </p>
+        <p style={{ marginTop: "20px" }}>
+          This visualization demonstrates that older individuals (50+) with
+          sleep disorders tend to have higher sleep risk levels, likely due to
+          cumulative stress and reduced recovery over time.
+        </p>
+        <p style={{ marginTop: "20px" }}>
+          These findings highlight the importance of addressing stressors and
+          promoting better sleep hygiene, especially for individuals in older
+          age brackets.
+        </p>
+      </div>
     </div>
   );
 }
