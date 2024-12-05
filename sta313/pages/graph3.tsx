@@ -118,8 +118,6 @@ export function GraphThree() {
         (d.group === "Without Sleep Disorder" && showWithoutDisorder)
     );
 
-    console.log("Filtered Data:", processedData);
-
     // Clear previous chart
     d3.select(chartRef.current).selectAll("*").remove();
 
@@ -265,7 +263,9 @@ export function GraphThree() {
       .style("boxShadow", "0 4px 8px rgba(0, 0, 0, 0.1)") // Subtle shadow for depth
       .style("width", "200px")
       .style("textAlign", "center") // Center-align the text
-      .style("display", "inline-block"); // Ensures box width adjusts to content
+      .style("display", "inline-block") // Ensures box width adjusts to content
+      .style("marginLeft", "1px")
+      .style("height", "150px");
 
     // Add legend title
     legendContainer
@@ -382,7 +382,8 @@ export function GraphThree() {
         </label>{" "}
       </div>{" "}
       <div style={{ display: "flex", marginTop: "5%" }}>
-        <svg ref={chartRef}></svg> <div id="legend-container"></div>
+        <svg ref={chartRef}></svg> 
+        <div id="legend-container"></div>
       </div>
     </div>
   );
@@ -565,7 +566,7 @@ export default function Page() {
 
       <div
         style={{
-          width: "800px", // Adjust based on the size of your graph
+          width: "1000px", // Adjust based on the size of your graph
           height: "800px", // Adjust based on the size of your graph
           backgroundColor: "#f9f9f9", // Light background color for the box
           border: "1px solid #ccc", // Border around the box
