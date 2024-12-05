@@ -400,8 +400,9 @@ export default function Page() {
         textAlign: "center",
         paddingTop: "1px", // Add padding equal to the height of your sticky header
         boxSizing: "border-box", // Ensure padding doesn't affect width
-        margin: "2%",
+        // margin: "2%",
         overflow: "auto",
+        paddingBottom: "10%"
       }}
     >
       <div style={{ width: "100%", margin: "2%" }}>
@@ -418,12 +419,154 @@ export default function Page() {
         >
           The Stress Factor: How Sleep Disorders Amplify Stress
         </h2>
+
+        <p style={{ textAlign: "left", padding: ".5%", paddingLeft: "3%", paddingRight: "3%" }}>
+          A dispatcher who has to do physically intensive work every morning has
+          multiple kinds of stress he/she is going through, work-related, job
+          pressure, work surges, management policies, and many more.{" "}
+        </p>
+
+        <p style={{ textAlign: "left", padding: ".5%", paddingLeft: "3%", paddingRight: "3%" }}>
+          Now imagine the despatcher getting a sleep disorder. Our study found
+          that sleep disorders increase the intensity of these stressors,
+          highlighting the problems workers go through with work pressure and
+          disrupted sleep patterns.
+        </p>
+
+        <p style={{ textAlign: "left", padding: ".5%", paddingLeft: "3%", paddingRight: "3%" }}>
+          The question we studied is: How does a sleep disorder amplify stress?
+          We created the following chart that depicts the average stress for a
+          dispatcher (with or without sleep disorder) for a list of stressors
+          listed below. The chart can be filtered for age, experience at work,
+          and marital status.
+        </p>
+
+        <div
+          style={{
+            marginTop: "1%",
+            textAlign: "center",
+            overflowX: "auto",
+            alignContent: "center",
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <table
+            style={{
+              borderCollapse: "collapse",
+              textAlign: "center",
+            }}
+          >
+            <thead>
+              <tr>
+                <th
+                  style={{
+                    padding: "10px",
+                    borderBottom: "2px solid #ccc",
+                  }}
+                >
+                  Stressor
+                </th>
+                <th
+                  style={{
+                    padding: "10px",
+                    borderBottom: "2px solid #ccc",
+                  }}
+                >
+                  Description
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>
+                  Lack of Control
+                </td>
+                <td style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>
+                  Stress arising from an inability to influence workplace
+                  decisions or processes.
+                </td>
+              </tr>
+              <tr>
+                <td style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>
+                  Job Pressure
+                </td>
+                <td style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>
+                  Stress related to heavy workloads, tight deadlines, or high
+                  performance expectations.
+                </td>
+              </tr>
+              <tr>
+                <td style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>
+                  Scanty Rules
+                </td>
+                <td style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>
+                  Stress caused by unclear or insufficient workplace guidelines
+                  and policies.
+                </td>
+              </tr>
+              <tr>
+                <td style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>
+                  Emergencies
+                </td>
+                <td style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>
+                  Stress resulting from handling unpredictable and high-stakes
+                  situations.
+                </td>
+              </tr>
+              <tr>
+                <td style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>
+                  Management Policies
+                </td>
+                <td style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>
+                  Stress stemming from disagreements or challenges with
+                  workplace management or policies.
+                </td>
+              </tr>
+              <tr>
+                <td style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>
+                  Inadequate Staff
+                </td>
+                <td style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>
+                  Stress caused by insufficient staff to handle the workload.
+                </td>
+              </tr>
+              <tr>
+                <td style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>
+                  Work Surges
+                </td>
+                <td style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>
+                  Stress from sudden increases in work demand.
+                </td>
+              </tr>
+              <tr>
+                <td style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>
+                  Communication
+                </td>
+                <td style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>
+                  Stress due to unclear, insufficient, or ineffective
+                  communication in the workplace.
+                </td>
+              </tr>
+              <tr>
+                <td style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>
+                  Safety Responsibility
+                </td>
+                <td style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>
+                  Stress related to ensuring the safety and well-being of others
+                  as part of the job.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <div
         style={{
           width: "800px", // Adjust based on the size of your graph
-          height: "1000px", // Adjust based on the size of your graph
+          height: "800px", // Adjust based on the size of your graph
           backgroundColor: "#f9f9f9", // Light background color for the box
           border: "1px solid #ccc", // Border around the box
           borderRadius: "10px", // Rounded corners for the box
@@ -436,6 +579,18 @@ export default function Page() {
       >
         <GraphThree />
       </div>
+
+      <div style={{ marginTop: "20px", textAlign: "left", height: "100%", overflow: "auto", padding: "10px", marginBottom: "2px", overflowY: "auto", display: "block",maxHeight: "400px" }}>
+        <h2 style={{ color: "white", fontSize: "24px", fontWeight: "bold" }}>
+          Key Insights:
+        </h2>
+        <ul style={{ fontSize: "16px", lineHeight: "1.8", paddingLeft: "20px", overflow: "auto", overflowY: "auto", listStyleType: "disc" }}>
+          <li> Stressors amplify in general if a dispatcher has a sleep disorder</li>
+          <li>The Average amplification of the stressors is much more if a person is unmarried</li>
+          <li>As the age group increases, the amplification of stressors also increase</li>
+          <li>As the years of experience increase, the amplification of stressors also increase</li>
+        </ul>
+     </div>
     </div>
   );
 }
