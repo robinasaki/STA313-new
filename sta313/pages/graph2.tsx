@@ -11,12 +11,13 @@ export function GraphTwo() {
     Mentally_Drained: "violet",
   };
 
-  const margin = { top: 20, right: 20, bottom: 40, left: 40 };
-  const width = 300 - margin.left - margin.right;
-  const height = 250 - margin.top - margin.bottom;
+  const margin = { top: 40, right: 40, bottom: 60, left: 60 };
+  const width = 500 - margin.left - margin.right;
+  const height = 300 - margin.top - margin.bottom; // Increased height slightly
 
   const groups = ["No Disorder", "Sleep Apnea", "Other Disorders"];
   const metrics = ["Alert_at_Work", "Phys_Drained", "Mentally_Drained"];
+  const chartIds = ["chart1", "chart2", "chart3"];
 
   useEffect(() => {
     // Load data from CSV
@@ -47,16 +48,30 @@ export function GraphTwo() {
     if (data.length === 0) return;
 
     // Clear existing charts
-    d3.select("#chart-container").selectAll("*").remove();
+    chartIds.forEach((id) => {
+      d3.select(`#${id}`).selectAll("*").remove();
+    });
+
+    // Remove existing tooltips
+    d3.selectAll(".tooltip").remove();
+
+    // Tooltip div (created once)
+    const tooltip = d3
+      .select("body")
+      .append("div")
+      .attr("class", "tooltip")
+      .style("position", "absolute")
+      .style("visibility", "hidden")
+      .style("padding", "8px")
+      .style("background-color", "rgba(0,0,0,0.6)")
+      .style("color", "#fff")
+      .style("border-radius", "4px")
+      .style("font-size", "14px");
 
     // Get the group for the current step
     const group = groups[currentStep];
 
-    const container = d3
-      .select("#chart-container")
-      .attr("style", "display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;");
-
-    metrics.forEach((metric) => {
+    metrics.forEach((metric, index) => {
       const metricData = data
         .filter((d) => d.Sleep_Disorder_Group === group)
         .map((d) => d[metric as keyof typeof metricsColors]);
@@ -70,12 +85,12 @@ export function GraphTwo() {
       const totalResponses = d3.sum(Array.from(counts.values()));
 
       // Convert counts to percentages
-      const percentages = Array.from(counts.entries()).map(([key, value]) => [
-        key,
-        (value / totalResponses) * 100,
-      ]);
+      const percentages = Array.from(counts.entries()).map(
+        ([key, value]) => [key, (value / totalResponses) * 100]
+      );
 
-      const svg = container
+      const svg = d3
+        .select(`#${chartIds[index]}`)
         .append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
@@ -90,30 +105,36 @@ export function GraphTwo() {
         .range([0, width])
         .padding(0.1);
 
-      const yScale = d3
-        .scaleLinear()
-        .domain([0, 100]) // 100% for percentages
-        .range([height, 0]);
+      const yScale = d3.scaleLinear().domain([0, 100]).range([height, 0]);
 
       // X Axis
       svg
         .append("g")
         .attr("class", "x-axis")
         .attr("transform", `translate(0, ${height})`)
-        .call(d3.axisBottom(xScale));
+        .call(d3.axisBottom(xScale))
+        .selectAll("text")
+        .style("fill", "white")
+        .style("font-size", "14px");
 
       // Y Axis
       svg
         .append("g")
         .attr("class", "y-axis")
-        .call(d3.axisLeft(yScale).tickFormat((d) => `${d}%`)); // Display as percentages
+        .call(d3.axisLeft(yScale).tickFormat((d) => `${d}%`))
+        .selectAll("text")
+        .style("fill", "white")
+        .style("font-size", "14px");
+
+      // Axis lines and ticks
+      svg.selectAll(".domain").attr("stroke", "white");
+      svg.selectAll(".tick line").attr("stroke", "white");
 
       // Bars
       const bars = svg
         .selectAll(".bar")
         .data(percentages, ([key]) => key as string);
 
-      // Enter and update
       bars
         .join(
           (enter) =>
@@ -121,10 +142,13 @@ export function GraphTwo() {
               .append("rect")
               .attr("class", "bar")
               .attr("x", ([key]) => xScale(key.toString())!)
-              .attr("y", yScale(0)) // Start at 0 for animation
+              .attr("y", yScale(0))
               .attr("width", xScale.bandwidth())
-              .attr("height", 0) // Start height at 0 for animation
-              .attr("fill", metricsColors[metric as keyof typeof metricsColors])
+              .attr("height", 0)
+              .attr(
+                "fill",
+                metricsColors[metric as keyof typeof metricsColors]
+              )
               .call((enter) =>
                 enter
                   .transition()
@@ -140,16 +164,36 @@ export function GraphTwo() {
                 .attr("y", ([, value]) => yScale(value))
                 .attr("height", ([, value]) => height - yScale(value))
             )
-        );
+        )
+        // Hover events for tooltip
+        .on("mouseover", function (event, [key, value]) {
+          d3.select(this).attr("fill", "orange");
+          tooltip
+            .style("visibility", "visible")
+            .text(`Percentage of respondents: ${value.toFixed(2)}%`);
+        })
+        .on("mousemove", function (event) {
+          tooltip
+            .style("top", event.pageY - 10 + "px")
+            .style("left", event.pageX + 10 + "px");
+        })
+        .on("mouseout", function () {
+          d3.select(this).attr(
+            "fill",
+            metricsColors[metric as keyof typeof metricsColors]
+          );
+          tooltip.style("visibility", "hidden");
+        });
 
       // Title
       svg
         .append("text")
         .attr("x", width / 2)
-        .attr("y", -10)
+        .attr("y", -20)
         .attr("text-anchor", "middle")
-        .style("font-size", "14px")
+        .style("font-size", "18px")
         .style("font-weight", "bold")
+        .style("fill", "white")
         .text(`${group}: ${metric.replace("_", " ")}`);
     });
   }, [data, currentStep]);
@@ -160,8 +204,57 @@ export function GraphTwo() {
 
   return (
     <div>
-      <div id="chart-container"></div>
-      <button onClick={handleNext} style={{ marginTop: "20px" }}>
+      <div
+        id="main-container"
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "center",
+          alignItems: "flex-start",
+          gap: "40px",
+        }}
+      >
+        {/* Left Column with Graphs */}
+        <div
+          id="charts-column"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "20px",
+          }}
+        >
+          <div id="chart1"></div>
+          <div id="chart2"></div>
+          <div id="chart3"></div>
+        </div>
+
+        {/* Right Column with Context */}
+        <div
+          id="context"
+          style={{
+            width: `${width + margin.left + margin.right}px`,
+            color: "white",
+            fontSize: "20px",
+            backgroundColor: "#21262d",
+            padding: "15px",
+            height: "100%", // Match the height of the graphs column
+          }}
+        >
+          INSERT BODY TEXT HERE!!!
+        </div>
+      </div>
+      <button
+        onClick={handleNext}
+        style={{
+          marginTop: "40px",
+          padding: "10px 20px",
+          fontSize: "16px",
+          color: "white",
+          backgroundColor: "gray",
+          border: "none",
+          cursor: "pointer",
+        }}
+      >
         Next
       </button>
     </div>
@@ -169,12 +262,19 @@ export function GraphTwo() {
 }
 
 export default function Page() {
-    return (
-        <div style={{
-            textAlign: 'center',
-            marginTop: '10px'
-        }}>
-            <GraphTwo />
-        </div>
-    )
+  return (
+    <div
+      style={{
+        textAlign: "center",
+        paddingTop: '20px',
+        color: "white",
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
+    >
+      <GraphTwo />
+    </div>
+  );
 }
