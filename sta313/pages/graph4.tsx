@@ -66,14 +66,12 @@ export function YearsVsSleepDisorderBarChart() {
       .domain([0, 0.5])
       .range([height + margin.top, margin.top]);
 
-    const colorScale = d3.scaleLinear().domain([0, 0.5]).range(["lightblue", "darkred"]);
-
     const svg = d3
       .select(svgRef.current)
       .attr("width", containerWidth)
       .attr("height", containerHeight);
 
-    // Create a tooltip
+    // Tooltip
     const tooltip = d3
       .select(containerRef.current)
       .append("div")
@@ -146,7 +144,10 @@ export function YearsVsSleepDisorderBarChart() {
       .style("fill", "white")
       .text("Proportion Diagnosed with Sleep Disorder");
 
-    // Bars with interactivity
+    // Bars with default purple color and interactivity
+    const defaultBarColor = "#6A0DAD"; // Default purple color
+    const hoverBarColor = "orange"; // Hover color
+
     svg
       .append("g")
       .selectAll("rect")
@@ -156,22 +157,21 @@ export function YearsVsSleepDisorderBarChart() {
       .attr("y", (d) => yScale(d.proportion))
       .attr("width", xScale.bandwidth())
       .attr("height", (d) => height + margin.top - yScale(d.proportion))
-      .attr("fill", (d) => colorScale(d.proportion))
+      .attr("fill", defaultBarColor) // Set default purple color
       .attr("opacity", 0.8)
       .on("mouseover", function (event, d) {
         d3.select(this)
           .transition()
           .duration(200)
-          .attr("fill", "orange");
-
+          .attr("fill", hoverBarColor); // Change to hover color
         tooltip
           .style("opacity", 1)
           .html(
-            `<strong style={{fontWeight: "bold"}}>Years:</strong> ${d.binRange}<br/>
-             <strong style={{fontWeight: "bold"}}>Proportion:</strong> ${(d.proportion * 100).toFixed(
+            `<strong>Years:</strong> ${d.binRange}<br/>
+             <strong>Proportion:</strong> ${(d.proportion * 100).toFixed(
                2
              )}%<br/>
-             <strong style={{fontWeight: "bold"}}>Total Dispatchers:</strong> ${d.total}`
+             <strong>Total Dispatchers:</strong> ${d.total}`
           );
       })
       .on("mousemove", function (event) {
@@ -179,93 +179,18 @@ export function YearsVsSleepDisorderBarChart() {
           .style("left", event.pageX - 5 + "px")
           .style("top", event.pageY - 90 + "px");
       })
-      .on("mouseout", function (event, d) {
+      .on("mouseout", function () {
         d3.select(this)
           .transition()
           .duration(200)
-          .attr("fill", (d) => colorScale(d.proportion));
-
+          .attr("fill", defaultBarColor); // Revert to default purple color
         tooltip.style("opacity", 0);
       });
 
-    
-    // Legend
-  const legendWidth = 250;
-  const legendHeight = 20;
-  const legendGroup = svg
-    .append("g")
-    .attr("transform", `translate(${width - 200},${margin.top + 1})`);
-
-  legendGroup
-    .append("rect")
-    .attr("width", legendWidth + 40)
-    .attr("height", legendHeight + 80)
-    .attr("x", -20)
-    .attr("y", -30)
-    .style("fill", "transparent")
-    .style("stroke", "white")
-    .style("stroke-width", 2);
-
-  legendGroup
-    .append("text")
-    .attr("x", legendWidth / 2)
-    .attr("y", -10)
-    .style("text-anchor", "middle")
-    .style("font-size", "14px")
-    .style("fill", "white")
-    .text("Legend:");
-
-  legendGroup
-    .append("text")
-    .attr("x", legendWidth / 2)
-    .attr("y", 5)
-    .style("text-anchor", "middle")
-    .style("font-size", "14px")
-    .style("fill", "white")
-    .text("Proportion Diagnosed with Sleep Disorder");
-
-  const gradient = svg
-    .append("defs")
-    .append("linearGradient")
-    .attr("id", "legend-gradient")
-    .attr("x1", "0%")
-    .attr("y1", "0%")
-    .attr("x2", "100%")
-    .attr("y2", "0%");
-
-  gradient
-    .append("stop")
-    .attr("offset", "0%")
-    .attr("stop-color", "lightblue");
-
-  gradient
-    .append("stop")
-    .attr("offset", "100%")
-    .attr("stop-color", "darkred");
-
-  legendGroup
-    .append("rect")
-    .attr("width", legendWidth)
-    .attr("height", legendHeight)
-    .attr("y", 15)
-    .style("fill", "url(#legend-gradient)");
-
-  const legendScale = d3.scaleLinear().domain([0, 0.5]).range([0, legendWidth]);
-  const legendAxis = d3.axisBottom(legendScale).ticks(5).tickFormat(d3.format(".0%"));
-
-  legendGroup
-    .append("g")
-    .attr("transform", `translate(0,${legendHeight + 15})`)
-    .call(legendAxis)
-    .selectAll("text")
-    .style("fill", "white")
-    .style("font-size", "12px");
-    
     // Cleanup tooltip on component unmount
     return () => {
       tooltip.remove();
     };
-  
   }, [chartData]);
 
   return (
@@ -287,43 +212,63 @@ export function YearsVsSleepDisorderBarChart() {
         <svg ref={svgRef}></svg>
       </div>
       <div style={{ marginLeft: "20px", flex: 1, maxWidth: "500px" }}>
-  <h1 style={{ fontSize: "30px", marginBottom: "20px" }}>Trends and Insights</h1>
-  <p style={{ marginBottom: "10px" }}>
-    The visualization examines the research question:{" "}
-    <strong style={{fontWeight: "bold"}}>
-      Does an increase in years as a dispatcher elevate the likelihood of sleep
-      disorders?
-    </strong>{" "}
-    Key trends relating to this are:
-  </p>
-  <p style={{ marginBottom: "10px" }}>
-  <strong style={{fontWeight: "bold", textDecoration: "underline"}}>Proportion Increases with Experience:</strong> Dispatchers with{" "}
-    <strong style={{fontWeight: "bold"}}>14–20 years</strong> of experience have a{" "}
-    <strong style={{fontWeight: "bold"}}>13.7% proportion</strong> of being diagnosed with a sleep disorder,
-    doubling the rate from the previous bin (7–13 years). Beyond{" "}
-    <strong style={{fontWeight: "bold"}}>20 years</strong>, the proportion continues to rise more!
-  </p>
-  <p style={{ marginBottom: "10px" }}>
-    <strong style={{fontWeight: "bold", textDecoration: "underline"}}>Highest Risk:</strong> Those with <strong style={{fontWeight: "bold"}}>35+ years</strong> of
-    experience show the <strong style={{fontWeight: "bold"}}>highest proportion</strong>, with{" "}
-    <strong style={{fontWeight: "bold"}}>25%</strong> diagnosed with a sleep disorder.
-  </p>
-  <p style={{ marginBottom: "10px" }}>
-  <strong style={{fontWeight: "bold", textDecoration: "underline"}}>Key Factors:</strong> Inconsistent work schedule, high pressure work
-    environments, and long works hours of a dispatcher, combine to increase the proportion over the years of experience
-  </p>
-  <p style={{ marginTop: "20px" }}>
-    This visualization demonstrates that having been exposed to factors such as
-    inconsistent work schedule, high pressure work environments as a dispatcher in the long term
-    consists to a <strong style={{fontWeight: "bold"}}>higher risk</strong> to being diagnosed with a sleep disorder.
-  </p>
+        <h1 style={{ fontSize: "30px", marginBottom: "20px" }}>
+          Trends and Insights
+        </h1>
+        <p style={{ marginBottom: "10px" }}>
+          The visualization examines the research question:{" "}
+          <strong style={{ fontWeight: "bold" }}>
+            Does an increase in years as a dispatcher elevate the likelihood of
+            sleep disorders?
+          </strong>{" "}
+          Key trends relating to this are:
+        </p>
+        <p style={{ marginBottom: "10px" }}>
+          <strong style={{ fontWeight: "bold", textDecoration: "underline" }}>
+            Proportion Increases with Experience:
+          </strong>{" "}
+          Dispatchers with{" "}
+          <strong style={{ fontWeight: "bold" }}>14–20 years</strong> of
+          experience have a{" "}
+          <strong style={{ fontWeight: "bold" }}>13.7% proportion</strong> of
+          being diagnosed with a sleep disorder, doubling the rate from the
+          previous bin (7–13 years). Beyond{" "}
+          <strong style={{ fontWeight: "bold" }}>20 years</strong>, the
+          proportion continues to rise more!
+        </p>
+        <p style={{ marginBottom: "10px" }}>
+          <strong style={{ fontWeight: "bold", textDecoration: "underline" }}>
+            Highest Risk:
+          </strong>{" "}
+          Those with <strong style={{ fontWeight: "bold" }}>35+ years</strong>{" "}
+          of experience show the <strong style={{ fontWeight: "bold" }}>
+            highest proportion
+          </strong>
+          , with <strong style={{ fontWeight: "bold" }}>25%</strong> diagnosed
+          with a sleep disorder.
+        </p>
+        <p style={{ marginBottom: "10px" }}>
+          <strong style={{ fontWeight: "bold", textDecoration: "underline" }}>
+            Key Factors:
+          </strong>{" "}
+          Inconsistent work schedule, high-pressure work environments, and long
+          work hours of a dispatcher, combine to increase the proportion over
+          the years of experience.
+        </p>
+        <p style={{ marginTop: "20px" }}>
+          This visualization demonstrates that having been exposed to factors
+          such as inconsistent work schedules, high-pressure work environments
+          as a dispatcher in the long term consists to a{" "}
+          <strong style={{ fontWeight: "bold" }}>higher risk</strong> to being
+          diagnosed with a sleep disorder.
+        </p>
 
-  <p style={{ marginTop: "20px" }}>
-    This emphasizes the need for better work conditions for dispatchers and to promote
-    healthier sleep habits espically for long term dispatchers.
-  </p>
-</div>
-
+        <p style={{ marginTop: "20px" }}>
+          This emphasizes the need for better work conditions for dispatchers
+          and to promote healthier sleep habits especially for long-term
+          dispatchers.
+        </p>
+      </div>
     </div>
   );
 }
