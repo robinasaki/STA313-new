@@ -163,13 +163,13 @@ const Introduction: React.FC = () => {
       >
         A Data-Driven Exploration
       </h2>
-      <p>
+      <div style={{marginBottom: '200px'}}>
         This study bridges existing literature with visualization-based
         insights, demonstrating how the interplay of stressors manifests in
         dispatchers’ health outcomes. Through the lens of age, experience, and
         occupational challenges, our findings not only reveal the trends but
         also highlight actionable pathways for intervention.
-      </p>
+      </div>
     </div>
   );
 };

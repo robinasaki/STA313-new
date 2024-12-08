@@ -157,13 +157,10 @@ export function YearsVsSleepDisorderBarChart() {
       .attr("y", (d) => yScale(d.proportion))
       .attr("width", xScale.bandwidth())
       .attr("height", (d) => height + margin.top - yScale(d.proportion))
-      .attr("fill", defaultBarColor) // Set default purple color
+      .attr("fill", defaultBarColor)
       .attr("opacity", 0.8)
       .on("mouseover", function (event, d) {
-        d3.select(this)
-          .transition()
-          .duration(200)
-          .attr("fill", hoverBarColor); // Change to hover color
+        d3.select(this).transition().duration(200).attr("fill", hoverBarColor);
         tooltip
           .style("opacity", 1)
           .html(
@@ -175,15 +172,10 @@ export function YearsVsSleepDisorderBarChart() {
           );
       })
       .on("mousemove", function (event) {
-        tooltip
-          .style("left", event.pageX - 5 + "px")
-          .style("top", event.pageY - 90 + "px");
+        tooltip.style("left", event.pageX - 5 + "px").style("top", event.pageY - 90 + "px");
       })
       .on("mouseout", function () {
-        d3.select(this)
-          .transition()
-          .duration(200)
-          .attr("fill", defaultBarColor); // Revert to default purple color
+        d3.select(this).transition().duration(200).attr("fill", defaultBarColor);
         tooltip.style("opacity", 0);
       });
 
@@ -200,18 +192,12 @@ export function YearsVsSleepDisorderBarChart() {
         backgroundColor: "#1a1a1a",
         color: "white",
         display: "flex",
-        flexDirection: "row",
-        alignItems: "flex-start",
+        flexDirection: "column",
+        alignItems: "center",
         padding: "20px",
       }}
     >
-      <div
-        ref={containerRef}
-        style={{ position: "relative", flex: 1, minWidth: "500px" }}
-      >
-        <svg ref={svgRef}></svg>
-      </div>
-      <div style={{ marginLeft: "20px", flex: 1, maxWidth: "500px" }}>
+      <div style={{ maxWidth: "450px", marginBottom: "40px" }}>
         <h1 style={{ fontSize: "30px", marginBottom: "20px" }}>
           Trends and Insights
         </h1>
@@ -268,6 +254,12 @@ export function YearsVsSleepDisorderBarChart() {
           and to promote healthier sleep habits especially for long-term
           dispatchers.
         </p>
+      </div>
+      <div
+        ref={containerRef}
+        style={{ position: "relative", width: "100%", maxWidth: "700px", marginBottom: '200px' }}
+      >
+        <svg ref={svgRef}></svg>
       </div>
     </div>
   );
