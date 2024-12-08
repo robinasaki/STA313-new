@@ -75,7 +75,7 @@ export function GraphOne() {
     const group_g2 = groups[currentStep_g2];
     const group_g3 = groups[currentStep_g3];
 
-    const groups_curr = { 0: group_g1, 1: group_g2, 2: group_g3 };
+    const groups_curr: any = { 0: group_g1, 1: group_g2, 2: group_g3 };
 
     metrics.forEach((metric, index) => {
       const metricData = data
@@ -114,11 +114,11 @@ export function GraphOne() {
 
       const yScale = d3.scaleLinear().domain([0, 100]).range([height, 0]);
 
-      const customLabels = {
+      const customLabels:any = {
         1: "Never",
         2: "Occasionally",
         3: "Frequently",
-        4: "Always"
+        4: "Always",
       };
 
       // X Axis
@@ -133,12 +133,12 @@ export function GraphOne() {
 
       svg
         .append("text")
-        .attr("x", width / 2) // Center horizontally
-        .attr("y", height + margin.bottom - 10) // Position below the x-axis
-        .attr("text-anchor", "middle") // Center align the text
-        .style("font-size", "16px") // Customize font size
-        .style("fill", "white") // Customize text color
-        .text("Response Scale"); // Replace with the desired x-axis title
+        .attr("x", width / 2)
+        .attr("y", height + margin.bottom - 10)
+        .attr("text-anchor", "middle")
+        .style("font-size", "16px")
+        .style("fill", "white")
+        .text("Response Scale");
 
       // Y Axis
       svg
@@ -151,13 +151,13 @@ export function GraphOne() {
 
       svg
         .append("text")
-        .attr("transform", "rotate(-90)") // Rotate for vertical alignment
-        .attr("x", -height / 2) // Center vertically (negative because of rotation)
-        .attr("y", -margin.left + 20) // Position left of the y-axis
+        .attr("transform", "rotate(-90)")
+        .attr("x", -height / 2)
+        .attr("y", -margin.left + 20)
         .attr("text-anchor", "middle")
         .style("font-size", "16px")
         .style("fill", "white")
-        .text("Percentage of Responses");
+        .text("Percentage of Responses");
 
       // Axis lines and ticks
       svg.selectAll(".domain").attr("stroke", "white");
@@ -166,7 +166,7 @@ export function GraphOne() {
       // Bars
       const bars = svg
         .selectAll(".bar")
-        .data(percentages, ([key]) => key as string);
+        .data(percentages, ([key]: any) => key as any);
 
       bars
         .join(
@@ -215,23 +215,24 @@ export function GraphOne() {
           tooltip.style("visibility", "hidden");
         });
 
-        const customTitles = {
-          "No Disorder": {
-            Alert_at_Work: "No Sleep Disorder: Alertness at Work",
-            Phys_Drained: "No Sleep Disorder: Physical Fatigue",
-            Mentally_Drained: "No Sleep Disorder: Mental Fatigue",
-          },
-          "Sleep Apnea": {
-            Alert_at_Work: "Sleep Apnea: Alertness at Work",
-            Phys_Drained: "Sleep Apnea: Physical Fatigue",
-            Mentally_Drained: "Sleep Apnea: Mental Fatigue",
-          },
-          "Other Disorders": {
-            Alert_at_Work: "Other Sleep Disorders: Alertness at Work",
-            Phys_Drained: "Other Sleep Disorders: Physical Fatigue",
-            Mentally_Drained: "Other Sleep Disorders: Mental Fatigue",
-          },
-        };
+      const customTitles: any = {
+        "No Disorder": {
+          Alert_at_Work: "No Sleep Disorder: Alertness at Work",
+          Phys_Drained: "No Sleep Disorder: Physical Fatigue",
+          Mentally_Drained: "No Sleep Disorder: Mental Fatigue",
+        },
+        "Sleep Apnea": {
+          Alert_at_Work: "Sleep Apnea: Alertness at Work",
+          Phys_Drained: "Sleep Apnea: Physical Fatigue",
+          Mentally_Drained: "Sleep Apnea: Mental Fatigue",
+        },
+        "Other Disorders": {
+          Alert_at_Work: "Other Sleep Disorders: Alertness at Work",
+          Phys_Drained: "Other Sleep Disorders: Physical Fatigue",
+          Mentally_Drained: "Other Sleep Disorders: Mental Fatigue",
+        },
+      };
+
       // Title
       svg
         .append("text")
@@ -242,71 +243,65 @@ export function GraphOne() {
         .style("font-weight", "bold")
         .style("fill", "white")
         .text(customTitles[groups_curr[index]][metric]);
-        
     });
   }, [data, currentStep_g1, currentStep_g2, currentStep_g3]);
 
   const handleNext_g1 = () => {
     setCurrentStep_g1((prevStep) => {
-        if (prevStep + 1 < groups.length) {
-            return (prevStep + 1) % groups.length
-        } else {
-            return prevStep
-        }
-    }
-    ); 
+      if (prevStep + 1 < groups.length) {
+        return (prevStep + 1) % groups.length;
+      } else {
+        return prevStep;
+      }
+    });
   };
   const handleNext_g2 = () => {
     setCurrentStep_g2((prevStep) => {
-        if (prevStep + 1 < groups.length) {
-            return (prevStep + 1) % groups.length
-        } else {
-            return prevStep
-        }
-    }
-    );
+      if (prevStep + 1 < groups.length) {
+        return (prevStep + 1) % groups.length;
+      } else {
+        return prevStep;
+      }
+    });
   };
   const handleNext_g3 = () => {
     setCurrentStep_g3((prevStep) => {
-        if (prevStep + 1 < groups.length) {
-            return (prevStep + 1) % groups.length
-        } else {
-            return prevStep
-        }
-    }
-    ); 
+      if (prevStep + 1 < groups.length) {
+        return (prevStep + 1) % groups.length;
+      } else {
+        return prevStep;
+      }
+    });
   };
 
   const handlePrev_g1 = () => {
     setCurrentStep_g1((prevStep) => {
-        if (prevStep - 1 >= 0) {
-            return (prevStep - 1) % groups.length
-        } else {
-            return prevStep
-        }
-    }
-    );
+      if (prevStep - 1 >= 0) {
+        return (prevStep - 1) % groups.length;
+      } else {
+        return prevStep;
+      }
+    });
   };
   const handlePrev_g2 = () => {
     setCurrentStep_g2((prevStep) => {
-        if (prevStep - 1 >= 0) {
-            return (prevStep - 1) % groups.length
-        } else {
-            return prevStep
-        }
-    }
-    );
+      if (prevStep - 1 >= 0) {
+        return (prevStep - 1) % groups.length;
+      } else {
+        return prevStep;
+      }
+    });
   };
   const handlePrev_g3 = () => {
     setCurrentStep_g3((prevStep) => {
-        if (prevStep - 1 >= 0) {
-            return (prevStep - 1) % groups.length
-        } else {
-            return prevStep
-        }
-    }
-    );
+      if (prevStep - 1 >= 0) {
+        return (prevStep - 1) % groups.length;
+      } else {
+        return prevStep;
+      }
+    });
   };
+
   return (
     <div
       id="main-container"
@@ -318,8 +313,8 @@ export function GraphOne() {
         gap: "40px",
         textAlign: "center",
         overflow: "auto",
-        height: "100%", // Ensures the container takes the full viewport height
-        marginBottom: "25%", // Reset margin for proper centering
+        height: "100%",
+        marginBottom: "25%",
       }}
     >
       <div
@@ -333,13 +328,13 @@ export function GraphOne() {
       >
         <h2
           style={{
-            color: "white", // Set font color
-            fontSize: "48px", // Increased font size for a heading
-            fontWeight: "bold", // Bold text for emphasis
-            textAlign: "center", // Center-align the heading
-            margin: "2px 0", // Add spacing above and below the heading
-            display: "block", // Ensures the heading takes the full width of its line
-            clear: "both", // Clears any floated elements above or beside it
+            color: "white",
+            fontSize: "48px",
+            fontWeight: "bold",
+            textAlign: "center",
+            margin: "2px 0",
+            display: "block",
+            clear: "both",
           }}
         >
           Starting Point: The Impact of Sleep Disorders on Alertness and Fatigue
@@ -354,37 +349,61 @@ export function GraphOne() {
             paddingRight: "3%",
           }}
         >
-        
-        The analysis is presented in a series of transition graphs, comparing key indicators across three 
-        groups: individuals without sleep disorders, those with sleep apnea, and those with other 
-        sleep disorders (like insomnia, restless leg syndrome (RLS) and hypersomnia). 
+          The analysis is presented in a series of transition graphs, comparing
+          key indicators across three groups: individuals without sleep
+          disorders, those with sleep apnea, and those with other sleep
+          disorders (like insomnia, restless leg syndrome (RLS), and
+          hypersomnia).
         </p>
         <br></br>
-        
-        <div>
-        Each graph set explores three dimensions:
-        </div>
-        
+
+        <div>Each graph set explores three dimensions:</div>
+
         <ul>
-        <li>1.	Alertness at work: Measures how awake and engaged individuals feel during work hours.</li>
-        <li>2.	Physical fatigue: Captures the extent of physical exhaustion experienced throughout the day.</li>
-        <li>3.	Mental fatigue: Evaluates the degree of cognitive and mental exhaustion reported.</li>
+          <li>
+            1. Alertness at work: Measures how awake and engaged individuals feel
+            during work hours.
+          </li>
+          <li>
+            2. Physical fatigue: Captures the extent of physical exhaustion
+            experienced throughout the day.
+          </li>
+          <li>
+            3. Mental fatigue: Evaluates the degree of cognitive and mental
+            exhaustion reported.
+          </li>
         </ul>
-        
+
         <br></br>
-<div>
-The percentages indicate the percentage of dispatchers who gave that particular response in the specific disorder group.
-</div>
-<br></br>
-<div>
-The visualizations clearly demonstrate that sleep disorders significantly reduce alertness, as responses shifted from approximately 50% of respondents "Frequently" being alert in the "No Disorder" group to more than 50% "Occasionally" being alert in the Sleep Apnea group. In the “Other Sleep Disorders” group, we observe 12% “Never” feel alert and a whopping 62.5% now “Occasionally” feel alert. 
-Additionally, physical and mental fatigue increased in individuals with sleep apnea, with many more reporting feeling fatigued "Frequently" or "Always," compared to the low fatigue levels in the "No Disorder" group. For the physical fatigue category, there were only 5% who “Always” felt fatigued in the “No Disorder” group. However, this rose to 25% “Always” fatigued in the “Other Sleep Disorders” group. Also, moving from “No Sleep Disorder” to “Sleep Apnea”, a huge rise in the percentage of respondents feeling “Frequently” mentally fatigued is seen. 
-</div>
-<br></br>
-<div>
-We can clearly see the trends that show that sleep disorders greatly impact daily lives. The overarching trend is that sleep disorders dramatically reduce alertness, while physical and mental fatigue rise.
-</div> 
-      
+        <div>
+          The percentages indicate the proportion of dispatchers who gave that
+          particular response in the specific disorder group.
+        </div>
+        <br></br>
+        <div>
+          The visualizations clearly demonstrate that sleep disorders
+          significantly reduce alertness, as responses shifted from
+          approximately 50% of respondents "Frequently" being alert in the "No
+          Disorder" group to more than 50% "Occasionally" being alert in the
+          Sleep Apnea group. In the "Other Sleep Disorders" group, we observe
+          12% "Never" feel alert and a large 62.5% now "Occasionally" feel
+          alert.
+          Additionally, physical and mental fatigue increased in individuals
+          with sleep apnea, with many more reporting feeling fatigued
+          "Frequently" or "Always," compared to the low fatigue levels in the
+          "No Disorder" group. For the physical fatigue category, there were
+          only 5% who "Always" felt fatigued in the "No Disorder" group.
+          However, this rose to 25% "Always" fatigued in the "Other Sleep
+          Disorders" group. Also, moving from "No Sleep Disorder" to "Sleep
+          Apnea," a large rise in the percentage of respondents feeling
+          "Frequently" mentally fatigued is seen.
+        </div>
+        <br></br>
+        <div>
+          We can clearly see the trends that show that sleep disorders greatly
+          impact daily lives. The overarching trend is that sleep disorders
+          dramatically reduce alertness, while physical and mental fatigue rise.
+        </div>
       </div>
 
       <div

@@ -1,8 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 
+interface DataPoint {
+  Total_years_dispatcher: string;
+  Diagnosed_Sleep_disorder: string;
+}
+
 export function YearsVsSleepDisorderBarChart() {
-  const [chartData, setChartData] = useState<any[]>([]);
+  const [chartData, setChartData] = useState<DataPoint[]>([]);
   const svgRef = useRef<SVGSVGElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -11,15 +16,15 @@ export function YearsVsSleepDisorderBarChart() {
       .then((response) => response.text())
       .then((text) => {
         const rows = d3.csvParse(text);
-        setChartData(rows);
+        setChartData(rows as any);
       })
       .catch((error) => console.error("Error fetching CSV:", error));
   }, []);
 
   useEffect(() => {
-    if (chartData.length === 0 || !svgRef.current || !containerRef.current)
-      return;
+    if (chartData.length === 0 || !svgRef.current || !containerRef.current) return;
 
+    // Clear previous chart
     d3.select(svgRef.current).selectAll("*").remove();
 
     const containerWidth = containerRef.current.clientWidth;
@@ -29,27 +34,29 @@ export function YearsVsSleepDisorderBarChart() {
     const width = containerWidth - margin.left - margin.right;
     const height = containerHeight - margin.top - margin.bottom;
 
-    const parsedData = chartData.map((d: any) => ({
-      years: +d["Total_years_dispatcher"] || 0,
-      sleepDisorder: +d["Diagnosed_Sleep_disorder"],
+    // Parse data
+    const parsedData = chartData.map((d) => ({
+      years: +d.Total_years_dispatcher || 0,
+      sleepDisorder: +d.Diagnosed_Sleep_disorder,
     }));
 
     const binStep = 7;
     const maxYears = 42;
+
+    // Create bins
     const bins = d3
-      .bin()
+      .bin<{ years: number; sleepDisorder: number }, number>()
       .value((d) => d.years)
       .thresholds(d3.range(0, maxYears, binStep))(parsedData);
 
-    const groupedData = bins.map((bin, index, array) => {
-      const isLastBin = index === array.length - 1;
+    // Compute grouped data for plotting
+    const groupedData = bins.map((bin) => {
       const total = bin.length;
       const diagnosed = bin.filter((d) => d.sleepDisorder === 1).length;
       const proportion = total === 0 ? 0 : diagnosed / total;
+      // Use consistent bin labeling: e.g., "0-6", "7-13", etc.
       return {
-        binRange: isLastBin
-          ? `${Math.floor(bin.x0)}-${Math.floor(maxYears - 1)}`
-          : `${Math.floor(bin.x0)}-${Math.floor(bin.x1) - 1}`,
+        binRange: `${Math.floor(bin.x0 ?? 0)}-${Math.floor((bin.x1 ?? 0) - 1)}`,
         proportion,
         total,
       };
@@ -71,7 +78,7 @@ export function YearsVsSleepDisorderBarChart() {
       .attr("width", containerWidth)
       .attr("height", containerHeight);
 
-    // Tooltip
+    // Create a tooltip div
     const tooltip = d3
       .select(containerRef.current)
       .append("div")
@@ -92,9 +99,7 @@ export function YearsVsSleepDisorderBarChart() {
       .style("font-size", "20px")
       .style("font-weight", "bold")
       .style("fill", "white")
-      .text(
-        "Proportion of Dispatchers with Sleep Disorders by Years Of Experience"
-      );
+      .text("Proportion of Dispatchers with Sleep Disorders by Years of Experience");
 
     svg
       .append("line")
@@ -142,48 +147,41 @@ export function YearsVsSleepDisorderBarChart() {
       .style("text-anchor", "middle")
       .style("font-size", "18px")
       .style("fill", "white")
-      .text("Proportion Diagnosed with Sleep Disorder");
+      .text("Proportion Diagnosed with a Sleep Disorder");
 
-    // Bars with default purple color and interactivity
-    const defaultBarColor = "#6A0DAD"; // Default purple color
-    const hoverBarColor = "orange"; // Hover color
+    // Bar colors
+    const defaultBarColor = "#6A0DAD"; 
+    const hoverBarColor = "orange";
 
+    // Draw bars
     svg
       .append("g")
       .selectAll("rect")
       .data(groupedData)
       .join("rect")
-      .attr("x", (d) => xScale(d.binRange))
+      .attr("x", (d) => xScale(d.binRange) ?? 0)
       .attr("y", (d) => yScale(d.proportion))
       .attr("width", xScale.bandwidth())
       .attr("height", (d) => height + margin.top - yScale(d.proportion))
-      .attr("fill", defaultBarColor) // Set default purple color
+      .attr("fill", defaultBarColor)
       .attr("opacity", 0.8)
       .on("mouseover", function (event, d) {
-        d3.select(this)
-          .transition()
-          .duration(200)
-          .attr("fill", hoverBarColor); // Change to hover color
+        d3.select(this).transition().duration(200).attr("fill", hoverBarColor);
         tooltip
           .style("opacity", 1)
           .html(
             `<strong>Years:</strong> ${d.binRange}<br/>
-             <strong>Proportion:</strong> ${(d.proportion * 100).toFixed(
-               2
-             )}%<br/>
+             <strong>Proportion:</strong> ${(d.proportion * 100).toFixed(2)}%<br/>
              <strong>Total Dispatchers:</strong> ${d.total}`
           );
       })
       .on("mousemove", function (event) {
-        tooltip
-          .style("left", event.pageX - 5 + "px")
-          .style("top", event.pageY - 90 + "px");
+        // Use d3.pointer to get coordinates relative to the container
+        const [x, y] = d3.pointer(event, containerRef.current);
+        tooltip.style("left", `${x + 10}px`).style("top", `${y - 20}px`);
       })
       .on("mouseout", function () {
-        d3.select(this)
-          .transition()
-          .duration(200)
-          .attr("fill", defaultBarColor); // Revert to default purple color
+        d3.select(this).transition().duration(200).attr("fill", defaultBarColor);
         tooltip.style("opacity", 0);
       });
 
@@ -200,26 +198,17 @@ export function YearsVsSleepDisorderBarChart() {
         backgroundColor: "#1a1a1a",
         color: "white",
         display: "flex",
-        flexDirection: "row",
-        alignItems: "flex-start",
+        flexDirection: "column",
+        alignItems: "center",
         padding: "20px",
       }}
     >
-      <div
-        ref={containerRef}
-        style={{ position: "relative", flex: 1, minWidth: "500px" }}
-      >
-        <svg ref={svgRef}></svg>
-      </div>
-      <div style={{ marginLeft: "20px", flex: 1, maxWidth: "500px" }}>
-        <h1 style={{ fontSize: "30px", marginBottom: "20px" }}>
-          Trends and Insights
-        </h1>
+      <div style={{ maxWidth: "450px", marginBottom: "40px" }}>
+        <h1 style={{ fontSize: "30px", marginBottom: "20px" }}>Trends and Insights</h1>
         <p style={{ marginBottom: "10px" }}>
           The visualization examines the research question:{" "}
           <strong style={{ fontWeight: "bold" }}>
-            Does an increase in years as a dispatcher elevate the likelihood of
-            sleep disorders?
+            Does an increase in years as a dispatcher elevate the likelihood of sleep disorders?
           </strong>{" "}
           Key trends relating to this are:
         </p>
@@ -227,47 +216,44 @@ export function YearsVsSleepDisorderBarChart() {
           <strong style={{ fontWeight: "bold", textDecoration: "underline" }}>
             Proportion Increases with Experience:
           </strong>{" "}
-          Dispatchers with{" "}
-          <strong style={{ fontWeight: "bold" }}>14–20 years</strong> of
-          experience have a{" "}
-          <strong style={{ fontWeight: "bold" }}>13.7% proportion</strong> of
-          being diagnosed with a sleep disorder, doubling the rate from the
-          previous bin (7–13 years). Beyond{" "}
-          <strong style={{ fontWeight: "bold" }}>20 years</strong>, the
-          proportion continues to rise more!
+          Dispatchers with <strong style={{ fontWeight: "bold" }}>14–20 years</strong> of experience
+          have a <strong style={{ fontWeight: "bold" }}>13.7% proportion</strong> of being diagnosed
+          with a sleep disorder, doubling the rate from the previous bin (7–13 years). Beyond{" "}
+          <strong style={{ fontWeight: "bold" }}>20 years</strong>, the proportion continues to rise
+          more!
         </p>
         <p style={{ marginBottom: "10px" }}>
           <strong style={{ fontWeight: "bold", textDecoration: "underline" }}>
             Highest Risk:
           </strong>{" "}
-          Those with <strong style={{ fontWeight: "bold" }}>35+ years</strong>{" "}
-          of experience show the <strong style={{ fontWeight: "bold" }}>
-            highest proportion
-          </strong>
-          , with <strong style={{ fontWeight: "bold" }}>25%</strong> diagnosed
-          with a sleep disorder.
+          Those with <strong style={{ fontWeight: "bold" }}>35+ years</strong> of experience show the{" "}
+          <strong style={{ fontWeight: "bold" }}>highest proportion</strong>, with{" "}
+          <strong style={{ fontWeight: "bold" }}>25%</strong> diagnosed with a sleep disorder.
         </p>
         <p style={{ marginBottom: "10px" }}>
           <strong style={{ fontWeight: "bold", textDecoration: "underline" }}>
             Key Factors:
           </strong>{" "}
-          Inconsistent work schedule, high-pressure work environments, and long
-          work hours of a dispatcher, combine to increase the proportion over
-          the years of experience.
+          Inconsistent work schedule, high-pressure work environments, and long work hours of a
+          dispatcher combine to increase the proportion over the years of experience.
         </p>
         <p style={{ marginTop: "20px" }}>
-          This visualization demonstrates that having been exposed to factors
-          such as inconsistent work schedules, high-pressure work environments
-          as a dispatcher in the long term consists to a{" "}
-          <strong style={{ fontWeight: "bold" }}>higher risk</strong> to being
-          diagnosed with a sleep disorder.
+          This visualization demonstrates that having been exposed to factors such as inconsistent
+          work schedules and high-pressure work environments in the long term correlates with a{" "}
+          <strong style={{ fontWeight: "bold" }}>higher risk</strong> of being diagnosed with a sleep
+          disorder.
         </p>
 
         <p style={{ marginTop: "20px" }}>
-          This emphasizes the need for better work conditions for dispatchers
-          and to promote healthier sleep habits especially for long-term
-          dispatchers.
+          This emphasizes the need for better work conditions for dispatchers and to promote
+          healthier sleep habits, especially for long-term dispatchers.
         </p>
+      </div>
+      <div
+        ref={containerRef}
+        style={{ position: "relative", width: "100%", maxWidth: "700px", marginBottom: "200px" }}
+      >
+        <svg ref={svgRef}></svg>
       </div>
     </div>
   );
