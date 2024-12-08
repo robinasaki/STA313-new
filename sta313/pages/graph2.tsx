@@ -23,7 +23,7 @@ export function GraphTwo() {
     Inadeq_Staff: 1,
     TimeOff: 1,
     BreakTime: 1,
-    Age_Group: "20-29",
+    Age_Group: "30-39",
   });
   const [userRiskIndex, setUserRiskIndex] = useState<[number, string] | null>(
     null
@@ -366,7 +366,7 @@ export function GraphTwo() {
           textAlign: "center",
           fontSize: "48px", // Increase font size
           fontWeight: "bold", // Make it bold
-          paddingBottom: "20px"
+          paddingBottom: "20px",
         }}
       >
         How does the sleep risk index change with respect to age?
@@ -385,7 +385,7 @@ export function GraphTwo() {
           combination of key variables that represent workplace and life
           stressors. These include:
         </p>
-        <div 
+        <div
           style={{
             marginTop: "1%",
             textAlign: "center",
@@ -478,6 +478,19 @@ export function GraphTwo() {
             </tbody>
           </table>
         </div>
+        <p
+          style={{
+            marginTop: "30px",
+            paddingLeft: "50px",
+            paddingRight: "50px",
+          }}
+        >
+          Through this interactive exploration, the visualization conveys how
+          these factors collectively influence the sleep risk index and how
+          trends differ across age groups. It transforms multidimensional data
+          into an intuitive, interactive format, to help understand the relation
+          between stress, age, and sleep disorders.
+        </p>
       </div>
 
       <div
@@ -521,7 +534,7 @@ export function GraphTwo() {
               style={{
                 display: "flex",
                 flexDirection: "column",
-                padding: "10px"
+                padding: "10px",
               }}
             >
               <label
