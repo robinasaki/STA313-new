@@ -71,19 +71,9 @@ const Header = () => {
                     pointerEvents: hamburgerMenuOpened ? 'auto' : 'none', // Prevent interaction when closed
                 }}
             >
-                <ul className="flex flex-col p-4">
-                    <li className="py-2 border-b border-gray-200">
-                        <a href="#home" className="text-gray-300 hover:text-white">Home</a>
-                    </li>
-                    <li className="py-2 border-b border-gray-200">
-                        <a href="#about" className="text-gray-300 hover:text-white">About</a>
-                    </li>
-                    <li className="py-2 border-b border-gray-200">
-                        <a href="#services" className="text-gray-300 hover:text-white">Services</a>
-                    </li>
-                    <li className="py-2">
-                        <a href="#contact" className="text-gray-300 hover:text-white">Contact</a>
-                    </li>
+                <ul className="flex flex-col p-7" style={{width: '200px'}}>
+                    <li className="py-2">Developed By: </li>
+                    <li className="py-2">Chenxu (Robin) Mao</li>
                 </ul>
             </div>
         </div>
