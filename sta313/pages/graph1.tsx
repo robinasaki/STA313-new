@@ -115,10 +115,10 @@ export function GraphOne() {
       const yScale = d3.scaleLinear().domain([0, 100]).range([height, 0]);
 
       const customLabels = {
-        1: "never",
-        2: "occasionally",
-        3: "frequently",
-        4: "always"
+        1: "Never",
+        2: "Occasionally",
+        3: "Frequently",
+        4: "Always"
       };
 
       // X Axis
@@ -215,6 +215,23 @@ export function GraphOne() {
           tooltip.style("visibility", "hidden");
         });
 
+        const customTitles = {
+          "No Disorder": {
+            Alert_at_Work: "No Sleep Disorder: Alertness at Work",
+            Phys_Drained: "No Sleep Disorder: Physical Fatigue",
+            Mentally_Drained: "No Sleep Disorder: Mental Fatigue",
+          },
+          "Sleep Apnea": {
+            Alert_at_Work: "Sleep Apnea: Alertness at Work",
+            Phys_Drained: "Sleep Apnea: Physical Fatigue",
+            Mentally_Drained: "Sleep Apnea: Mental Fatigue",
+          },
+          "Other Disorders": {
+            Alert_at_Work: "Other Sleep Disorders: Alertness at Work",
+            Phys_Drained: "Other Sleep Disorders: Physical Fatigue",
+            Mentally_Drained: "Other Sleep Disorders: Mental Fatigue",
+          },
+        };
       // Title
       svg
         .append("text")
@@ -224,7 +241,8 @@ export function GraphOne() {
         .style("font-size", "18px")
         .style("font-weight", "bold")
         .style("fill", "white")
-        .text(`${groups_curr[index]}: ${metric.replace("_", " ")}`);
+        .text(customTitles[groups_curr[index]][metric]);
+        
     });
   }, [data, currentStep_g1, currentStep_g2, currentStep_g3]);
 
@@ -327,6 +345,7 @@ export function GraphOne() {
           Starting Point: The Impact of Sleep Disorders on Alertness and Fatigue
         </h2>
 
+        <div></div>
         <p
           style={{
             textAlign: "center",
@@ -335,8 +354,37 @@ export function GraphOne() {
             paddingRight: "3%",
           }}
         >
-          content .......
+        
+        The analysis is presented in a series of transition graphs, comparing key indicators across three 
+        groups: individuals without sleep disorders, those with sleep apnea, and those with other 
+        sleep disorders (like insomnia, restless leg syndrome (RLS) and hypersomnia). 
         </p>
+        <br></br>
+        
+        <div>
+        Each graph set explores three dimensions:
+        </div>
+        
+        <ul>
+        <li>1.	Alertness at work: Measures how awake and engaged individuals feel during work hours.</li>
+        <li>2.	Physical fatigue: Captures the extent of physical exhaustion experienced throughout the day.</li>
+        <li>3.	Mental fatigue: Evaluates the degree of cognitive and mental exhaustion reported.</li>
+        </ul>
+        
+        <br></br>
+<div>
+The percentages indicate the percentage of dispatchers who gave that particular response in the specific disorder group.
+</div>
+<br></br>
+<div>
+The visualizations clearly demonstrate that sleep disorders significantly reduce alertness, as responses shifted from approximately 50% of respondents "Frequently" being alert in the "No Disorder" group to more than 50% "Occasionally" being alert in the Sleep Apnea group. In the “Other Sleep Disorders” group, we observe 12% “Never” feel alert and a whopping 62.5% now “Occasionally” feel alert. 
+Additionally, physical and mental fatigue increased in individuals with sleep apnea, with many more reporting feeling fatigued "Frequently" or "Always," compared to the low fatigue levels in the "No Disorder" group. For the physical fatigue category, there were only 5% who “Always” felt fatigued in the “No Disorder” group. However, this rose to 25% “Always” fatigued in the “Other Sleep Disorders” group. Also, moving from “No Sleep Disorder” to “Sleep Apnea”, a huge rise in the percentage of respondents feeling “Frequently” mentally fatigued is seen. 
+</div>
+<br></br>
+<div>
+We can clearly see the trends that show that sleep disorders greatly impact daily lives. The overarching trend is that sleep disorders dramatically reduce alertness, while physical and mental fatigue rise.
+</div> 
+      
       </div>
 
       <div
