@@ -53,7 +53,7 @@ const Header = () => {
                     position: 'absolute',
                     top: '100%',
                     left: '10px',
-                    width: '15%',
+                    width: '30%',
                     background: 'linear-gradient(to bottom, #1f2937, #1f2947)',
                     padding: '1rem',
                     display: 'flex',
@@ -71,9 +71,13 @@ const Header = () => {
                     pointerEvents: hamburgerMenuOpened ? 'auto' : 'none', // Prevent interaction when closed
                 }}
             >
-                <ul className="flex flex-col p-7" style={{width: '200px'}}>
-                    <li className="py-2">Developed By: </li>
-                    <li className="py-2">Chenxu (Robin) Mao</li>
+                <ul className="flex flex-col p-6">
+                    <li className="py-2">Made with Love by: </li>
+                    <li className="py-2">Graph 1: Garv Mohan Sood</li>
+                    <li className="py-2">Graph 2: Sidharth Sachdev</li>
+                    <li className="py-2">Graph 3: Eeshan Narula</li>
+                    <li className="py-2">Graph 4: Fardin Faruk</li>
+                    <li className="py-2">Development: Chenxu (Robin) Mao</li>
                 </ul>
             </div>
         </div>
