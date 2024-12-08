@@ -201,7 +201,7 @@ export function GraphThree() {
     const radarLine = d3
       .lineRadial()
       .curve(d3.curveCardinalClosed)
-      .radius((d) => radiusScale(d))
+      .radius((d: any) => radiusScale(d))
       .angle((d, i) => i * angleSlice);
 
     // Draw radar chart areas
@@ -214,7 +214,7 @@ export function GraphThree() {
 
     radarGroup
       .append("path")
-      .attr("d", (d) => radarLine(d.values))
+      .attr("d", (d: any) => radarLine(d.values))
       .attr("fill", (d) =>
         d.group === "With Sleep Disorder" ? "blue" : "orange"
       )
