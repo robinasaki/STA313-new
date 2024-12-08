@@ -115,11 +115,10 @@ export function GraphOne() {
       const yScale = d3.scaleLinear().domain([0, 100]).range([height, 0]);
 
       const customLabels = {
-        1: "Very Low",
-        2: "Low",
-        3: "Neutral",
-        4: "High",
-        5: "Very High",
+        1: "never",
+        2: "occasionally",
+        3: "frequently",
+        4: "always"
       };
 
       // X Axis
@@ -169,12 +168,6 @@ export function GraphOne() {
         .selectAll(".bar")
         .data(percentages, ([key]) => key as string);
 
-      const key_to_lab = {
-        1: "never",
-        2: "occasionally",
-        3: "frequently",
-        4: "always",
-      };
       bars
         .join(
           (enter) =>
@@ -236,23 +229,65 @@ export function GraphOne() {
   }, [data, currentStep_g1, currentStep_g2, currentStep_g3]);
 
   const handleNext_g1 = () => {
-    setCurrentStep_g1((prevStep) => (prevStep + 1) % groups.length); // Loop back to the first step
+    setCurrentStep_g1((prevStep) => {
+        if (prevStep + 1 < groups.length) {
+            return (prevStep + 1) % groups.length
+        } else {
+            return prevStep
+        }
+    }
+    ); 
   };
   const handleNext_g2 = () => {
-    setCurrentStep_g2((prevStep) => (prevStep + 1) % groups.length); // Loop back to the first step
+    setCurrentStep_g2((prevStep) => {
+        if (prevStep + 1 < groups.length) {
+            return (prevStep + 1) % groups.length
+        } else {
+            return prevStep
+        }
+    }
+    );
   };
   const handleNext_g3 = () => {
-    setCurrentStep_g3((prevStep) => (prevStep + 1) % groups.length); // Loop back to the first step
+    setCurrentStep_g3((prevStep) => {
+        if (prevStep + 1 < groups.length) {
+            return (prevStep + 1) % groups.length
+        } else {
+            return prevStep
+        }
+    }
+    ); 
   };
 
   const handlePrev_g1 = () => {
-    setCurrentStep_g1((prevStep) => (prevStep - 1) % groups.length); // Loop back to the first step
+    setCurrentStep_g1((prevStep) => {
+        if (prevStep - 1 >= 0) {
+            return (prevStep - 1) % groups.length
+        } else {
+            return prevStep
+        }
+    }
+    );
   };
   const handlePrev_g2 = () => {
-    setCurrentStep_g2((prevStep) => (prevStep - 1) % groups.length); // Loop back to the first step
+    setCurrentStep_g2((prevStep) => {
+        if (prevStep - 1 >= 0) {
+            return (prevStep - 1) % groups.length
+        } else {
+            return prevStep
+        }
+    }
+    );
   };
   const handlePrev_g3 = () => {
-    setCurrentStep_g3((prevStep) => (prevStep - 1) % groups.length); // Loop back to the first step
+    setCurrentStep_g3((prevStep) => {
+        if (prevStep - 1 >= 0) {
+            return (prevStep - 1) % groups.length
+        } else {
+            return prevStep
+        }
+    }
+    );
   };
   return (
     <div
