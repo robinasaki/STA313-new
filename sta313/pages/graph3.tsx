@@ -106,7 +106,7 @@ export function GraphThree() {
     const processedData = Array.from(groupedData, ([key, group]) => {
       const averages = stressVars.map((varName) => {
         const values = group.map((d) => +d[varName]);
-        return d3.mean(values);
+        return d3.mean(values) ?? 0; // Ensure mean is a number
       });
       return {
         group: key === "1" ? "With Sleep Disorder" : "Without Sleep Disorder",
