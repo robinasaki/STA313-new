@@ -3,7 +3,9 @@ import * as d3 from "d3";
 
 export function GraphOne() {
   const [data, setData] = useState<any[]>([]);
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep_g1, setCurrentStep_g1] = useState(0);
+  const [currentStep_g2, setCurrentStep_g2] = useState(0);
+  const [currentStep_g3, setCurrentStep_g3] = useState(0);
 
   const metricsColors = {
     Alert_at_Work: "blue",
@@ -69,11 +71,15 @@ export function GraphOne() {
       .style("font-size", "14px");
 
     // Get the group for the current step
-    const group = groups[currentStep];
+    const group_g1 = groups[currentStep_g1];
+    const group_g2 = groups[currentStep_g2];
+    const group_g3 = groups[currentStep_g3];
+
+    const groups_curr = { 0: group_g1, 1: group_g2, 2: group_g3 };
 
     metrics.forEach((metric, index) => {
       const metricData = data
-        .filter((d) => d.Sleep_Disorder_Group === group)
+        .filter((d) => d.Sleep_Disorder_Group === groups_curr[index])
         .map((d) => d[metric as keyof typeof metricsColors]);
 
       const counts = d3.rollup(
@@ -85,9 +91,10 @@ export function GraphOne() {
       const totalResponses = d3.sum(Array.from(counts.values()));
 
       // Convert counts to percentages
-      const percentages = Array.from(counts.entries()).map(
-        ([key, value]) => [key, (value / totalResponses) * 100]
-      );
+      const percentages = Array.from(counts.entries()).map(([key, value]) => [
+        key,
+        (value / totalResponses) * 100,
+      ]);
 
       const svg = d3
         .select(`#${chartIds[index]}`)
@@ -101,21 +108,38 @@ export function GraphOne() {
       // Scales
       const xScale = d3
         .scaleBand()
-        .domain([1, 2, 3, 4, 5].map(String))
+        .domain([1, 2, 3, 4].map(String))
         .range([0, width])
         .padding(0.1);
 
       const yScale = d3.scaleLinear().domain([0, 100]).range([height, 0]);
+
+      const customLabels = {
+        1: "Very Low",
+        2: "Low",
+        3: "Neutral",
+        4: "High",
+        5: "Very High",
+      };
 
       // X Axis
       svg
         .append("g")
         .attr("class", "x-axis")
         .attr("transform", `translate(0, ${height})`)
-        .call(d3.axisBottom(xScale))
+        .call(d3.axisBottom(xScale).tickFormat((d) => customLabels[d] || d))
         .selectAll("text")
         .style("fill", "white")
         .style("font-size", "14px");
+
+      svg
+        .append("text")
+        .attr("x", width / 2) // Center horizontally
+        .attr("y", height + margin.bottom - 10) // Position below the x-axis
+        .attr("text-anchor", "middle") // Center align the text
+        .style("font-size", "16px") // Customize font size
+        .style("fill", "white") // Customize text color
+        .text("Response Scale"); // Replace with the desired x-axis title
 
       // Y Axis
       svg
@@ -126,6 +150,16 @@ export function GraphOne() {
         .style("fill", "white")
         .style("font-size", "14px");
 
+      svg
+        .append("text")
+        .attr("transform", "rotate(-90)") // Rotate for vertical alignment
+        .attr("x", -height / 2) // Center vertically (negative because of rotation)
+        .attr("y", -margin.left + 20) // Position left of the y-axis
+        .attr("text-anchor", "middle")
+        .style("font-size", "16px")
+        .style("fill", "white")
+        .text("Percentage of Responses");
+
       // Axis lines and ticks
       svg.selectAll(".domain").attr("stroke", "white");
       svg.selectAll(".tick line").attr("stroke", "white");
@@ -135,6 +169,12 @@ export function GraphOne() {
         .selectAll(".bar")
         .data(percentages, ([key]) => key as string);
 
+      const key_to_lab = {
+        1: "never",
+        2: "occasionally",
+        3: "frequently",
+        4: "always",
+      };
       bars
         .join(
           (enter) =>
@@ -145,10 +185,7 @@ export function GraphOne() {
               .attr("y", yScale(0))
               .attr("width", xScale.bandwidth())
               .attr("height", 0)
-              .attr(
-                "fill",
-                metricsColors[metric as keyof typeof metricsColors]
-              )
+              .attr("fill", metricsColors[metric as keyof typeof metricsColors])
               .call((enter) =>
                 enter
                   .transition()
@@ -194,41 +231,54 @@ export function GraphOne() {
         .style("font-size", "18px")
         .style("font-weight", "bold")
         .style("fill", "white")
-        .text(`${group}: ${metric.replace("_", " ")}`);
+        .text(`${groups_curr[index]}: ${metric.replace("_", " ")}`);
     });
-  }, [data, currentStep]);
+  }, [data, currentStep_g1, currentStep_g2, currentStep_g3]);
 
-  const handleNext = () => {
-    setCurrentStep((prevStep) => (prevStep + 1) % groups.length); // Loop back to the first step
+  const handleNext_g1 = () => {
+    setCurrentStep_g1((prevStep) => (prevStep + 1) % groups.length); // Loop back to the first step
+  };
+  const handleNext_g2 = () => {
+    setCurrentStep_g2((prevStep) => (prevStep + 1) % groups.length); // Loop back to the first step
+  };
+  const handleNext_g3 = () => {
+    setCurrentStep_g3((prevStep) => (prevStep + 1) % groups.length); // Loop back to the first step
   };
 
+  const handlePrev_g1 = () => {
+    setCurrentStep_g1((prevStep) => (prevStep - 1) % groups.length); // Loop back to the first step
+  };
+  const handlePrev_g2 = () => {
+    setCurrentStep_g2((prevStep) => (prevStep - 1) % groups.length); // Loop back to the first step
+  };
+  const handlePrev_g3 = () => {
+    setCurrentStep_g3((prevStep) => (prevStep - 1) % groups.length); // Loop back to the first step
+  };
   return (
-    
+    <div
+      id="main-container"
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center", // Vertically centers content
+        alignItems: "center", // Horizontally centers content
+        gap: "40px",
+        textAlign: "center",
+        overflow: "auto",
+        height: "100%", // Ensures the container takes the full viewport height
+        marginBottom: "25%", // Reset margin for proper centering
+      }}
+    >
       <div
-        id="main-container"
+        id="context"
         style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center", // Vertically centers content
-            alignItems: "center", // Horizontally centers content
-            gap: "40px",
-            textAlign: "center",
-            overflow: "auto",
-            height: "100%", // Ensures the container takes the full viewport height
-            marginBottom: "25%", // Reset margin for proper centering
-          }}
+          width: `100%`,
+          color: "white",
+          padding: "15px",
+          height: "100%",
+        }}
       >
-
-        <div
-          id="context"
-          style={{
-            width: `100%`,
-            color: "white",
-            padding: "15px",
-            height: "100%", 
-          }}
-        >
-          <h2
+        <h2
           style={{
             color: "white", // Set font color
             fontSize: "48px", // Increased font size for a heading
@@ -238,49 +288,160 @@ export function GraphOne() {
             display: "block", // Ensures the heading takes the full width of its line
             clear: "both", // Clears any floated elements above or beside it
           }}
-        >Starting Point: The Impact of Sleep Disorders on Alertness and Fatigue</h2>
+        >
+          Starting Point: The Impact of Sleep Disorders on Alertness and Fatigue
+        </h2>
 
-
-        <p style={{ textAlign: "center", padding: ".5%", paddingLeft: "3%", paddingRight: "3%" }}>
-          content .......
-        </p>  
-        
-        </div>
-
-        <div
-          id="charts-column"
+        <p
           style={{
-            display: "flex",
-            flexDirection: "column",
-          border: "1px solid #ccc", 
-          borderRadius: "10px",
-          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", 
-          padding: "20px", 
-          justifyContent: "center",
-          alignItems: "center",
-          overflow:"auto",
-          
+            textAlign: "center",
+            padding: ".5%",
+            paddingLeft: "3%",
+            paddingRight: "3%",
           }}
         >
-          <div id="chart1" style={{width: "100%", justifyContent: "center",textAlign: "center"}}></div>
-          <div id="chart2" style={{width: "100%", justifyContent: "center", textAlign: "center",}}></div>
-          <div id="chart3" style={{width: "100%", justifyContent: "center", textAlign: "center",}}></div>
-          <button
-        onClick={handleNext}
+          content .......
+        </p>
+      </div>
+
+      <div
+        id="charts-column"
         style={{
-          marginTop: "40px",
-          padding: "10px 20px",
-          fontSize: "16px",
-          color: "white",
-          backgroundColor: "gray",
-          border: "none",
-          cursor: "pointer",
+          display: "flex",
+          flexDirection: "column",
+          border: "1px solid #ccc",
+          borderRadius: "10px",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+          padding: "20px",
+          justifyContent: "center",
+          alignItems: "center",
+          overflow: "auto",
         }}
       >
-        Next
-      </button>
+        <div style={{ display: "flex", flexDirection: "row" }}>
+          <div
+            id="chart1"
+            style={{
+              width: "100%",
+              justifyContent: "center",
+              textAlign: "center",
+            }}
+          ></div>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <button
+              onClick={handleNext_g1}
+              style={{
+                marginTop: "40px",
+                padding: "10px 20px",
+                fontSize: "16px",
+                color: "white",
+                backgroundColor: "gray",
+                border: "none",
+                cursor: "pointer",
+              }}
+            >
+              Next
+            </button>
+            <button
+              onClick={handlePrev_g1}
+              style={{
+                marginTop: "40px",
+                padding: "10px 20px",
+                fontSize: "16px",
+                color: "white",
+                backgroundColor: "gray",
+                border: "none",
+                cursor: "pointer",
+              }}
+            >
+              Prev
+            </button>
+          </div>
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "row" }}>
+          <div
+            id="chart2"
+            style={{
+              width: "100%",
+              justifyContent: "center",
+              textAlign: "center",
+            }}
+          ></div>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <button
+              onClick={handleNext_g2}
+              style={{
+                marginTop: "40px",
+                padding: "10px 20px",
+                fontSize: "16px",
+                color: "white",
+                backgroundColor: "gray",
+                border: "none",
+                cursor: "pointer",
+              }}
+            >
+              Next
+            </button>
+            <button
+              onClick={handlePrev_g2}
+              style={{
+                marginTop: "40px",
+                padding: "10px 20px",
+                fontSize: "16px",
+                color: "white",
+                backgroundColor: "gray",
+                border: "none",
+                cursor: "pointer",
+              }}
+            >
+              Prev
+            </button>
+          </div>
+        </div>
+
+        <div style={{ display: "flex", flexDirection: "row" }}>
+          <div
+            id="chart3"
+            style={{
+              width: "100%",
+              justifyContent: "center",
+              textAlign: "center",
+            }}
+          ></div>
+          <div style={{ display: "flex", flexDirection: "column" }}>
+            <button
+              onClick={handleNext_g3}
+              style={{
+                marginTop: "40px",
+                padding: "10px 20px",
+                fontSize: "16px",
+                color: "white",
+                backgroundColor: "gray",
+                border: "none",
+                cursor: "pointer",
+              }}
+            >
+              Next
+            </button>
+            <button
+              onClick={handlePrev_g3}
+              style={{
+                marginTop: "40px",
+                padding: "10px 20px",
+                fontSize: "16px",
+                color: "white",
+                backgroundColor: "gray",
+                border: "none",
+                cursor: "pointer",
+              }}
+            >
+              Prev
+            </button>
+          </div>
         </div>
       </div>
+    </div>
   );
 }
 
@@ -289,17 +450,16 @@ export default function Page() {
     <div
       style={{
         textAlign: "center",
-        paddingTop: '20px',
+        paddingTop: "20px",
         color: "white",
         minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        overflow: "auto"
+        overflow: "auto",
       }}
     >
       <GraphOne />
     </div>
   );
 }
-
