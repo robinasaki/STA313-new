@@ -203,47 +203,69 @@ export function GraphOne() {
   };
 
   return (
-    <div>
+    
       <div
         id="main-container"
         style={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "center",
-          alignItems: "flex-start",
-          gap: "40px",
-        }}
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center", // Vertically centers content
+            alignItems: "center", // Horizontally centers content
+            gap: "40px",
+            textAlign: "center",
+            overflow: "auto",
+            height: "100%", // Ensures the container takes the full viewport height
+            marginBottom: "25%", // Reset margin for proper centering
+          }}
       >
-        {/* Left Column with Graphs */}
+
+        <div
+          id="context"
+          style={{
+            width: `100%`,
+            color: "white",
+            padding: "15px",
+            height: "100%", 
+          }}
+        >
+          <h2
+          style={{
+            color: "white", // Set font color
+            fontSize: "48px", // Increased font size for a heading
+            fontWeight: "bold", // Bold text for emphasis
+            textAlign: "center", // Center-align the heading
+            margin: "2px 0", // Add spacing above and below the heading
+            display: "block", // Ensures the heading takes the full width of its line
+            clear: "both", // Clears any floated elements above or beside it
+          }}
+        >Starting Point: The Impact of Sleep Disorders on Alertness and Fatigue</h2>
+
+
+        <p style={{ textAlign: "center", padding: ".5%", paddingLeft: "3%", paddingRight: "3%" }}>
+          content .......
+        </p>  
+        
+        </div>
+
         <div
           id="charts-column"
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: "20px",
+          border: "1px solid #ccc", 
+          borderRadius: "10px",
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", 
+          padding: "20px", 
+          justifyContent: "center",
+          alignItems: "center",
+          overflow:"auto",
+          
           }}
         >
-          <div id="chart1"></div>
-          <div id="chart2"></div>
-          <div id="chart3"></div>
-        </div>
-
-        {/* Right Column with Context */}
-        <div
-          id="context"
-          style={{
-            width: `${width + margin.left + margin.right}px`,
-            color: "white",
-            fontSize: "20px",
-            backgroundColor: "#21262d",
-            padding: "15px",
-            height: "100%", // Match the height of the graphs column
-          }}
-        >
-          INSERT BODY TEXT HERE!!!
-        </div>
-      </div>
-      <button
+          <div id="chart1" style={{width: "100%", justifyContent: "center",textAlign: "center"}}></div>
+          <div id="chart2" style={{width: "100%", justifyContent: "center", textAlign: "center",}}></div>
+          <div id="chart3" style={{width: "100%", justifyContent: "center", textAlign: "center",}}></div>
+          <button
         onClick={handleNext}
         style={{
           marginTop: "40px",
@@ -257,7 +279,8 @@ export function GraphOne() {
       >
         Next
       </button>
-    </div>
+        </div>
+      </div>
   );
 }
 
@@ -272,6 +295,7 @@ export default function Page() {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
+        overflow: "auto"
       }}
     >
       <GraphOne />
