@@ -1,8 +1,33 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 
+interface UserInput {
+  Sleep_loss: number;
+  Total_life_events: number;
+  Job_pressure: number;
+  Resp_for_others_safety: number;
+  Inadeq_Staff: number;
+  TimeOff: number;
+  BreakTime: number;
+  Age_Group: string; // Example: "20-29"
+}
+
 export function SleepRiskBubbleChart() {
   const [chartData, setChartData] = useState<any[]>([]);
+  const [minMaxValues, setMinMaxValues] = useState<any>({});
+  const [userInput, setUserInput] = useState<UserInput>({
+    Sleep_loss: 1,
+    Total_life_events: 0,
+    Job_pressure: 1,
+    Resp_for_others_safety: 1,
+    Inadeq_Staff: 1,
+    TimeOff: 1,
+    BreakTime: 1,
+    Age_Group: "20-29",
+  });
+  const [userRiskIndex, setUserRiskIndex] = useState<[number, string] | null>(
+    null
+  );
   const svgRef = useRef<SVGSVGElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -12,46 +37,79 @@ export function SleepRiskBubbleChart() {
       .then((text) => {
         const rows = d3.csvParse(text);
 
-        // Normalize function
-        const normalize = (values: number[]) => {
-          const min = Math.min(...values);
-          const max = Math.max(...values);
-          return values.map((v) => (v - min) / (max - min));
+        // Helper to calculate min and max
+        const calculateMinMax = (values: number[]) => ({
+          min: Math.min(...values),
+          max: Math.max(...values),
+        });
+
+        // Extract relevant columns and calculate min/max
+        const minMax = {
+          Sleep_loss: calculateMinMax(rows.map((d) => +d["Sleep_loss"] || 0)),
+          Total_life_events: calculateMinMax(
+            rows.map((d) => +d["Total_life_events"] || 0)
+          ),
+          Job_pressure: calculateMinMax(
+            rows.map((d) => +d["Job_pressure"] || 0)
+          ),
+          Resp_for_others_safety: calculateMinMax(
+            rows.map((d) => +d["Resp_for_others_safety"] || 0)
+          ),
+          Inadeq_Staff: calculateMinMax(
+            rows.map((d) => +d["Inadeq_Staff"] || 0)
+          ),
+          TimeOff: calculateMinMax(rows.map((d) => +d["TimeOff"] || 0)),
+          BreakTime: calculateMinMax(rows.map((d) => +d["BreakTime"] || 0)),
         };
 
-        // Extract and normalize relevant columns
-        const sleepLoss = rows.map((d) => +d["Sleep_loss"] || 0);
-        const totalLifeEvents = rows.map((d) => +d["Total_life_events"] || 0);
-        const jobPressure = rows.map((d) => +d["Job_pressure"] || 0);
-        const safetyResponsibility = rows.map(
-          (d) => +d["Resp_for_others_safety"] || 0
-        );
-        const inadequateStaff = rows.map((d) => +d["Inadeq_Staff"] || 0);
-        const timeOff = rows.map((d) => +d["TimeOff"] || 0);
-        const breakTime = rows.map((d) => +d["BreakTime"] || 0);
+        setMinMaxValues(minMax);
 
-        const normalizedSleepLoss = normalize(sleepLoss);
-        const normalizedLifeEvents = normalize(totalLifeEvents);
-        const normalizedJobPressure = normalize(jobPressure);
-        const normalizedSafetyResponsibility = normalize(safetyResponsibility);
-        const normalizedInadequateStaff = normalize(inadequateStaff);
-        const normalizedTimeOff = normalize(timeOff);
-        const normalizedBreakTime = normalize(breakTime);
+        // Normalize function
+        const normalize = (values: number[], min: number, max: number) =>
+          values.map((v) => (v - min) / (max - min));
 
         // Calculate Sleep Risk Index
         const sleepRiskIndices = rows.map((_, i) => {
           const factors = [
-            normalizedSleepLoss[i],
-            normalizedLifeEvents[i],
-            normalizedJobPressure[i],
-            normalizedSafetyResponsibility[i],
-            normalizedInadequateStaff[i],
-            normalizedTimeOff[i],
-            normalizedBreakTime[i],
+            normalize(
+              rows.map((d) => +d["Sleep_loss"] || 0),
+              minMax.Sleep_loss.min,
+              minMax.Sleep_loss.max
+            )[i],
+            normalize(
+              rows.map((d) => +d["Total_life_events"] || 0),
+              minMax.Total_life_events.min,
+              minMax.Total_life_events.max
+            )[i],
+            normalize(
+              rows.map((d) => +d["Job_pressure"] || 0),
+              minMax.Job_pressure.min,
+              minMax.Job_pressure.max
+            )[i],
+            normalize(
+              rows.map((d) => +d["Resp_for_others_safety"] || 0),
+              minMax.Resp_for_others_safety.min,
+              minMax.Resp_for_others_safety.max
+            )[i],
+            normalize(
+              rows.map((d) => +d["Inadeq_Staff"] || 0),
+              minMax.Inadeq_Staff.min,
+              minMax.Inadeq_Staff.max
+            )[i],
+            normalize(
+              rows.map((d) => +d["TimeOff"] || 0),
+              minMax.TimeOff.min,
+              minMax.TimeOff.max
+            )[i],
+            normalize(
+              rows.map((d) => +d["BreakTime"] || 0),
+              minMax.BreakTime.min,
+              minMax.BreakTime.max
+            )[i],
           ];
           return (
             factors.reduce((sum, value) => sum + value, 0) / factors.length
-          ); // Average of factors
+          );
         });
 
         const ageGroupMapping: { [key: string]: string } = {
@@ -62,21 +120,12 @@ export function SleepRiskBubbleChart() {
           5: "60+",
         };
 
-        // Debug Age_Group values
-        console.log(
-          "Age_Group values:",
-          rows.map((d) => d["Age_Group"])
-        );
-
-        // Filter and process data
         const parsedData = rows
           .filter((d) => {
             const ageGroup = +d["Age_Group"];
-            if (!ageGroupMapping[ageGroup]) {
-              console.warn("Unmapped or invalid age group:", ageGroup); // Debug unmapped values
-              return false; // Exclude invalid rows
-            }
-            return d["Diagnosed_Sleep_disorder"] === "1";
+            return (
+              d["Diagnosed_Sleep_disorder"] === "1" && ageGroupMapping[ageGroup]
+            );
           })
           .map((d, i) => ({
             ageGroup: ageGroupMapping[+d["Age_Group"]],
@@ -90,15 +139,16 @@ export function SleepRiskBubbleChart() {
   }, []);
 
   useEffect(() => {
-    if (chartData.length === 0 || !svgRef.current || !containerRef.current)
-      return;
+    renderChart();
+  }, [chartData, userRiskIndex]);
 
-    // Clean previous SVG
-    d3.select(svgRef.current).selectAll("*").remove();
+  const renderChart = () => {
+    if (!svgRef.current || !containerRef.current || chartData.length === 0)
+      return;
 
     // Dimensions
     const containerWidth = containerRef.current.clientWidth;
-    const containerHeight = window.innerHeight * 0.8;
+    const containerHeight = 500;
 
     const margin = { top: 90, right: 40, bottom: 90, left: 100 };
     const width = containerWidth - margin.left - margin.right;
@@ -108,13 +158,13 @@ export function SleepRiskBubbleChart() {
 
     const xScale = d3
       .scalePoint()
-      .domain(ageGroupOrder) // Ensure X-axis is sorted correctly
+      .domain(ageGroupOrder)
       .range([margin.left, width + margin.left])
       .padding(0.5);
 
     const yScale = d3
       .scaleLinear()
-      .domain([0, 1]) // Sleep Risk Index is normalized to 0-1
+      .domain([0, 1])
       .range([height + margin.top, margin.top]);
 
     const colorScale = d3
@@ -122,10 +172,8 @@ export function SleepRiskBubbleChart() {
       .domain(["true", "false"])
       .range(["#ff7f0e", "#1f77b4"]);
 
-    const svg = d3
-      .select(svgRef.current)
-      .attr("width", containerWidth)
-      .attr("height", containerHeight);
+    const svg = d3.select(svgRef.current);
+    svg.selectAll("*").remove();
 
     // Tooltip
     const tooltip = d3
@@ -138,16 +186,6 @@ export function SleepRiskBubbleChart() {
       .style("border-radius", "4px")
       .style("pointer-events", "none")
       .style("opacity", 0);
-
-    // Title
-    svg
-      .append("text")
-      .attr("x", width / 2 + margin.left)
-      .attr("y", margin.top / 2)
-      .style("text-anchor", "middle")
-      .style("font-size", "20px")
-      .style("font-weight", "bold")
-      .text("Sleep Risk Index by Age Group and Sleep Disorder Status");
 
     // Axes
     svg
@@ -166,16 +204,17 @@ export function SleepRiskBubbleChart() {
       .selectAll("circle")
       .data(chartData)
       .join("circle")
-      .attr("cx", (d) => xScale(d.ageGroup))
-      .attr("cy", (d) => yScale(d.sleepRisk))
+      .attr("cx", (d) => xScale(d.ageGroup) || 0)
+      .attr("cy", (d) => yScale(d.sleepRisk) || 0)
       .attr("r", 10)
       .attr("fill", (d) => colorScale(d.hasDisorder.toString()))
       .on("mouseover", function (event, d) {
         d3.select(this).transition().duration(200).attr("opacity", 0.8);
         tooltip.style("opacity", 1).html(
           `<strong>Age Group:</strong> ${d.ageGroup}<br/>
-           <strong>Sleep Risk Index:</strong> ${d.sleepRisk.toFixed(2)}<br/>
-           <strong>Disorder:</strong> ${d.hasDisorder ? "Yes" : "No"}`
+             <strong>Sleep Risk Index:</strong> ${(d.sleepRisk * 100).toFixed(
+               2
+             )}%`
         );
       })
       .on("mousemove", (event) => {
@@ -188,78 +227,331 @@ export function SleepRiskBubbleChart() {
         tooltip.style("opacity", 0);
       });
 
-    // Cleanup
-    return () => {
-      tooltip.remove();
-    };
-  }, [chartData]);
+    // Plot User Input Risk Index
+    if (userRiskIndex !== null) {
+      const [riskIndex, ageGroup] = userRiskIndex; // Destructure tuple
+      svg
+        .append("text")
+        .attr("x", xScale(userInput.Age_Group) || 0)
+        .attr("y", yScale(riskIndex) || 0)
+        .text("X")
+        .attr("font-size", "24px")
+        .attr("fill", "red")
+        .attr("text-anchor", "middle");
+    }
+  };
+
+  const normalizeValue = (value: number, min: number, max: number) =>
+    (value - min) / (max - min);
+
+  const calculateUserRiskIndex = () => {
+    const {
+      Sleep_loss,
+      Total_life_events,
+      Job_pressure,
+      Resp_for_others_safety,
+      Inadeq_Staff,
+      TimeOff,
+      BreakTime,
+      Age_Group,
+    } = userInput;
+
+    const normalizedFactors = [
+      normalizeValue(
+        Sleep_loss,
+        minMaxValues.Sleep_loss.min,
+        minMaxValues.Sleep_loss.max
+      ),
+      normalizeValue(
+        Total_life_events,
+        minMaxValues.Total_life_events.min,
+        minMaxValues.Total_life_events.max
+      ),
+      normalizeValue(
+        Job_pressure,
+        minMaxValues.Job_pressure.min,
+        minMaxValues.Job_pressure.max
+      ),
+      normalizeValue(
+        Resp_for_others_safety,
+        minMaxValues.Resp_for_others_safety.min,
+        minMaxValues.Resp_for_others_safety.max
+      ),
+      normalizeValue(
+        Inadeq_Staff,
+        minMaxValues.Inadeq_Staff.min,
+        minMaxValues.Inadeq_Staff.max
+      ),
+      normalizeValue(
+        TimeOff,
+        minMaxValues.TimeOff.min,
+        minMaxValues.TimeOff.max
+      ),
+      normalizeValue(
+        BreakTime,
+        minMaxValues.BreakTime.min,
+        minMaxValues.BreakTime.max
+      ),
+    ];
+
+    const riskIndex =
+      normalizedFactors.reduce((sum, val) => sum + +val, 0) /
+      normalizedFactors.length;
+
+    setUserRiskIndex([riskIndex, Age_Group]); // Set the tuple with riskIndex and Age_Group
+  };
+
+  const ageGroupOptions = ["20-29", "30-39", "40-49", "50-59", "60+"];
+
+  const labelsMap: { [key: string]: string } = {
+    Sleep_loss: "Sleep Loss",
+    Job_pressure: "Job Pressure",
+    Resp_for_others_safety: "Responsibility for Others' Safety",
+    Inadeq_Staff: "Inadequate Staff",
+    TimeOff: "Time Off",
+    BreakTime: "Break Time",
+  };
 
   return (
     <div
       ref={containerRef}
-      style={{ position: "relative", background: "#1a1a1a", color: "white" }}
+      style={{
+        position: "relative",
+        background: "#1a1a1a",
+        color: "white",
+        overflow: "scroll",
+        gap: "20px", // Adds space between graph and controls
+      }}
     >
-      <svg ref={svgRef}></svg>
-      <div style={{ marginLeft: "20px", flex: 1, maxWidth: "500px" }}>
-        <h1 style={{ fontSize: "30px", marginBottom: "20px" }}>
-          Trends and Insights
-        </h1>
-        <p style={{ marginBottom: "10px" }}>
-          The visualization examines the research question:{" "}
-          <strong style={{ fontWeight: "bold" }}>
-            How does age influence sleep risk for individuals diagnosed with
-            sleep disorders?
-          </strong>{" "}
-          Key trends relating to this are:
-        </p>
-        <p style={{ marginBottom: "10px" }}>
-          <strong style={{ fontWeight: "bold", textDecoration: "underline" }}>
-            Higher Risk Among Older Age Groups:
-          </strong>
-          Individuals in the{" "}
-          <strong style={{ fontWeight: "bold" }}>50-59</strong> and{" "}
-          <strong style={{ fontWeight: "bold" }}>60+ years</strong> age groups
-          show a{" "}
-          <strong style={{ fontWeight: "bold" }}>
-            higher Sleep Risk Index
-          </strong>
-          , with a significant clustering of high-risk cases.
-        </p>
-        <p style={{ marginBottom: "10px" }}>
-          <strong style={{ fontWeight: "bold", textDecoration: "underline" }}>
-            Variation Across Age Groups:
-          </strong>
-          The <strong style={{ fontWeight: "bold" }}>40-49</strong> age group
-          has moderate variability, while the{" "}
-          <strong style={{ fontWeight: "bold" }}>20-29</strong>
-          and <strong style={{ fontWeight: "bold" }}>30-39</strong> groups show
-          generally lower Sleep Risk Index values, indicating younger
-          individuals are at comparatively lower risk.
-        </p>
-        <p style={{ marginBottom: "10px" }}>
-          <strong style={{ fontWeight: "bold", textDecoration: "underline" }}>
-            Underlying Factors:
-          </strong>
-          Stress-related workplace and life factors, such as{" "}
-          <strong style={{ fontWeight: "bold" }}>job pressure</strong>,{" "}
-          <strong style={{ fontWeight: "bold" }}>inadequate time off</strong>,
-          and{" "}
-          <strong style={{ fontWeight: "bold" }}>
-            responsibility for others’ safety
-          </strong>
-          , contribute significantly to the Sleep Risk Index across all age
-          groups.
-        </p>
-        <p style={{ marginTop: "20px" }}>
-          This visualization demonstrates that older individuals (50+) with
-          sleep disorders tend to have higher sleep risk levels, likely due to
-          cumulative stress and reduced recovery over time.
-        </p>
-        <p style={{ marginTop: "20px" }}>
-          These findings highlight the importance of addressing stressors and
-          promoting better sleep hygiene, especially for individuals in older
-          age brackets.
-        </p>
+      <h1
+        style={{
+          color: "white",
+          textAlign: "center",
+          fontSize: "32px", // Increase font size
+          fontWeight: "bold", // Make it bold
+        }}
+      >
+        How does the sleep risk index change with respect to age?
+      </h1>
+      <svg
+        ref={svgRef}
+        style={{
+          flex: 2,
+          height: "55vh",
+          width: "100%",
+        }}
+      ></svg>
+      <div
+        style={{
+          flex: 1,
+          padding: "20px",
+          color: "white",
+          display: "flex",
+          flexDirection: "column",
+          gap: "10px",
+        }}
+      >
+        <h3>Enter Your Data</h3>
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "10px",
+            justifyContent: "space-between",
+          }}
+        >
+          {Object.keys(userInput).map((key) => (
+            <div
+              key={key}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <label
+                style={{
+                  fontSize: "12px",
+                  textAlign: "center",
+                  marginBottom: "4px",
+                }}
+              >
+                {labelsMap[key] || key.replace(/_/g, " ")}{" "}
+                {/* Use the custom label */}
+              </label>
+              {key === "Age_Group" ? (
+                <select
+                  value={userInput.Age_Group}
+                  onChange={(e) =>
+                    setUserInput({
+                      ...userInput,
+                      Age_Group: e.target.value,
+                    })
+                  }
+                  style={{
+                    padding: "4px",
+                    borderRadius: "4px",
+                    border: "1px solid white",
+                    background: "#2a2a2a",
+                    color: "white",
+                    fontSize: "14px",
+                    textAlign: "center",
+                    width: "120px",
+                  }}
+                >
+                  {ageGroupOptions.map((group) => (
+                    <option key={group} value={group}>
+                      {group}
+                    </option>
+                  ))}
+                </select>
+              ) : [
+                  "Sleep_loss",
+                  "Job_pressure",
+                  "Resp_for_others_safety",
+                  "Inadeq_Staff",
+                  "TimeOff",
+                  "BreakTime",
+                ].includes(key) ? (
+                <select
+                  value={userInput[key as keyof UserInput]}
+                  onChange={(e) =>
+                    setUserInput({
+                      ...userInput,
+                      [key]: parseInt(e.target.value, 10),
+                    })
+                  }
+                  style={{
+                    padding: "4px",
+                    borderRadius: "4px",
+                    border: "1px solid white",
+                    background: "#2a2a2a",
+                    color: "white",
+                    fontSize: "14px",
+                    textAlign: "center",
+                    width: "120px",
+                  }}
+                >
+                  <option value="1">No Stress</option>
+                  <option value="2">A Little Stress</option>
+                  <option value="3">Stressful</option>
+                  <option value="4">Very Stressful</option>
+                </select>
+              ) : (
+                <input
+                  type="number"
+                  value={userInput[key as keyof UserInput]} // Explicit cast
+                  onChange={(e) =>
+                    setUserInput({
+                      ...userInput,
+                      [key]: +e.target.value,
+                    })
+                  }
+                  style={{
+                    padding: "4px",
+                    borderRadius: "4px",
+                    border: "1px solid white",
+                    background: "#2a2a2a",
+                    color: "white",
+                    fontSize: "14px",
+                    textAlign: "center",
+                    width: "80px", // Consistent input width
+                  }}
+                />
+              )}
+            </div>
+          ))}
+        </div>
+        <button
+          onClick={calculateUserRiskIndex}
+          style={{
+            marginTop: "20px",
+            padding: "10px 20px",
+            background: "#ff7f0e",
+            color: "white",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+          }}
+        >
+          Calculate and Plot Risk Index
+        </button>
+      </div>
+      <div
+        style={{
+          marginLeft: "20px",
+          flex: 1,
+          display: "flex",
+          gap: "20px",
+          flexWrap: "wrap", // Allows wrapping if screen size is small
+          maxWidth: "100%",
+        }}
+      >
+        {/* First Column */}
+        <div style={{ flex: 1, minWidth: "300px" }}>
+          <h1 style={{ fontSize: "30px", marginBottom: "20px" }}>
+            Trends and Insights
+          </h1>
+          <p style={{ marginBottom: "10px" }}>
+            The visualization examines the research question:{" "}
+            <strong style={{ fontWeight: "bold" }}>
+              How does age influence sleep risk for individuals diagnosed with
+              sleep disorders?
+            </strong>{" "}
+            Key trends relating to this are:
+          </p>
+          <p style={{ marginBottom: "10px" }}>
+            <strong style={{ fontWeight: "bold", textDecoration: "underline" }}>
+              Higher Risk Among Older Age Groups:
+            </strong>
+            Individuals in the{" "}
+            <strong style={{ fontWeight: "bold" }}>50-59</strong> and{" "}
+            <strong style={{ fontWeight: "bold" }}>60+ years</strong> age groups
+            show a{" "}
+            <strong style={{ fontWeight: "bold" }}>
+              higher Sleep Risk Index
+            </strong>
+            , with a significant clustering of high-risk cases.
+          </p>
+          <p style={{ marginBottom: "10px" }}>
+            <strong style={{ fontWeight: "bold", textDecoration: "underline" }}>
+              Variation Across Age Groups:
+            </strong>
+            The <strong style={{ fontWeight: "bold" }}>40-49</strong> age group
+            has moderate variability, while the{" "}
+            <strong style={{ fontWeight: "bold" }}>20-29</strong> and{" "}
+            <strong style={{ fontWeight: "bold" }}>30-39</strong> groups show
+            generally lower Sleep Risk Index values, indicating younger
+            individuals are at comparatively lower risk.
+          </p>
+        </div>
+
+        {/* Second Column */}
+        <div style={{ flex: 1, minWidth: "300px" }}>
+          <p style={{ marginBottom: "10px" }}>
+            <strong style={{ fontWeight: "bold", textDecoration: "underline" }}>
+              Underlying Factors:
+            </strong>
+            Stress-related workplace and life factors, such as{" "}
+            <strong style={{ fontWeight: "bold" }}>job pressure</strong>,{" "}
+            <strong style={{ fontWeight: "bold" }}>inadequate time off</strong>,
+            and{" "}
+            <strong style={{ fontWeight: "bold" }}>
+              responsibility for others’ safety
+            </strong>
+            , contribute significantly to the Sleep Risk Index across all age
+            groups.
+          </p>
+          <p style={{ marginTop: "20px" }}>
+            This visualization demonstrates that older individuals (50+) with
+            sleep disorders tend to have higher sleep risk levels, likely due to
+            cumulative stress and reduced recovery over time.
+          </p>
+          <p style={{ marginTop: "20px" }}>
+            These findings highlight the importance of addressing stressors and
+            promoting better sleep hygiene, especially for individuals in older
+            age brackets.
+          </p>
+        </div>
       </div>
     </div>
   );
