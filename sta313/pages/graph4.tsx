@@ -96,15 +96,15 @@ export function YearsVsSleepDisorderBarChart() {
       .attr("x", width / 2 + margin.left)
       .attr("y", margin.top / 2)
       .style("text-anchor", "middle")
-      .style("font-size", "20px")
+      .style("font-size", "19px")
       .style("font-weight", "bold")
       .style("fill", "white")
       .text("Proportion of Dispatchers with Sleep Disorders by Years of Experience");
 
     svg
       .append("line")
-      .attr("x1", width / 2 + margin.left - 350)
-      .attr("x2", width / 2 + margin.left + 350)
+      .attr("x1", width / 2 + margin.left - 320)
+      .attr("x2", width / 2 + margin.left + 320)
       .attr("y1", margin.top / 2 + 5)
       .attr("y2", margin.top / 2 + 5)
       .style("stroke", "white")
